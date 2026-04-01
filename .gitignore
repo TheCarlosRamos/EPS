@@ -1,0 +1,15 @@
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+*$py.class
+.ruff_cache/
+.mypy_cache/
+.pytest_cache/
+bandit-report.json
+*.egg-info/
+dist/
+build/
+.env
+.env.*
+!.env.example

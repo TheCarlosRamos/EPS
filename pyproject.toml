@@ -1,0 +1,31 @@
+[tool.poetry]
+name = "eps-secops"
+version = "0.1.0"
+description = "EPS — Onboarding SecOps & Soberania Técnica (Fase 1)"
+authors = ["Carlos Ramos"]
+readme = "RELATORIO.md"
+package-mode = false
+
+[tool.poetry.dependencies]
+python = "^3.12"
+django = ">=5.0,<7.0"
+
+[tool.poetry.group.dev.dependencies]
+bandit = ">=1.7"
+ruff = ">=0.8"
+safety = ">=3.0"
+pydantic = ">=2.0"
+
+[build-system]
+requires = ["poetry-core>=2.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP"]
+
+[tool.bandit]
+exclude_dirs = [".venv", "venv", ".ruff_cache"]
