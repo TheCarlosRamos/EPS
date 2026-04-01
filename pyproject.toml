@@ -14,6 +14,7 @@ django = ">=5.0,<7.0"
 bandit = ">=1.7"
 ruff = ">=0.8"
 safety = ">=3.0"
+pip-audit = ">=2.6"
 pydantic = ">=2.0"
 
 [build-system]

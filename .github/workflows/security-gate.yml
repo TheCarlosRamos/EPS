@@ -54,10 +54,20 @@ jobs:
       - name: Formatter (Ruff)
         run: poetry run ruff format --check .
 
-      - name: SCA (Safety)
+      # SCA sem conta: audita o venv atual (dependências instaladas pelo Poetry).
+      - name: SCA (pip-audit)
+        run: poetry run pip-audit
+
+      # Safety 3.x exige API key; sem ela a CLI pede (R)/(L) e quebra em ambiente não interativo.
+      - name: SCA (Safety — com SAFETY_API_KEY)
         env:
           SAFETY_API_KEY: ${{ secrets.SAFETY_API_KEY }}
-        run: poetry run safety scan
+        run: |
+          if [ -z "${SAFETY_API_KEY:-}" ]; then
+            echo "::notice::SAFETY_API_KEY não configurada — pulando Safety scan. Adicione a secret em Settings → Secrets → Actions para ativar."
+            exit 0
+          fi
+          poetry run safety scan
 
       - name: Secret scanning (Gitleaks)
         uses: gitleaks/gitleaks-action@v2

@@ -40,7 +40,7 @@ O repositório individual contém um workflow no **GitHub Actions** (`.github/wo
 | Controle | Ferramenta |
 |----------|------------|
 | SAST | Bandit |
-| SCA | Safety |
+| SCA | **pip-audit** (sempre no CI) + **Safety** (se `SAFETY_API_KEY` estiver definida) |
 | Linter / Formatter | Ruff |
 | Secret scanning | Gitleaks |
 
@@ -129,10 +129,11 @@ poetry install
 poetry run bandit -ll sample_app.py
 poetry run ruff check .
 poetry run ruff format --check .
+poetry run pip-audit
 poetry run safety scan
 ```
 
-> **Safety (SCA):** a CLI 3.x exige autenticação. Obtenha uma chave em [Safety CLI](https://docs.safetycli.com/) e configure no repositório GitHub: **Settings → Secrets and variables → Actions → `SAFETY_API_KEY`**. Sem essa secret, o passo **SCA (Safety)** falha no CI.
+> **Safety (SCA):** a CLI 3.x exige conta e **não funciona em modo interativo no GitHub Actions** sem chave. Configure **Settings → Secrets and variables → Actions → `SAFETY_API_KEY`** (veja [documentação Safety](https://docs.safetycli.com/)). Se a secret não existir, o workflow **pula** o Safety e segue; o **pip-audit** continua garantindo SCA no ambiente Poetry.
 
 ### Prazos (referência do desafio)
 
@@ -147,7 +148,7 @@ poetry run safety scan
 
 | Secret / variável | Uso |
 |-------------------|-----|
-| `SAFETY_API_KEY` | Obrigatória para o passo **SCA (Safety)** no GitHub Actions |
+| `SAFETY_API_KEY` | Opcional: se definida, executa também **Safety scan**; sem ela, só **pip-audit** roda como SCA principal no CI |
 | `GITHUB_TOKEN` | Fornecida automaticamente; usada pelo Gitleaks |
 
 Arquivo do workflow: `.github/workflows/security-gate.yml`.
