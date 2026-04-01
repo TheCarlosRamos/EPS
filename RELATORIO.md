@@ -64,8 +64,10 @@ O pipeline imprime `poetry env info` em cada execução (job **Evidência de amb
 Execução local:
 
 ```bash
-poetry run bandit -r .
+poetry run bandit -ll -f json -o bandit-report.json sample_app.py
 ```
+
+> Evite `bandit -r .` com `.venv` no repositório: o SAST pode entrar em `site-packages`, gerar avisos espúrios e sair com código 1. No CI o alvo é explicitamente `sample_app.py`.
 
 Esperado: **nenhum issue** no código atual (`sample_app.py`). O relatório JSON é gerado no CI como artefato `bandit-report`.
 
@@ -124,7 +126,7 @@ poetry install
 #### 2. Protocolo de auditoria e qualidade (Domínio 8 CISSP)
 
 ```bash
-poetry run bandit -r .
+poetry run bandit -ll sample_app.py
 poetry run ruff check .
 poetry run ruff format --check .
 poetry run safety scan

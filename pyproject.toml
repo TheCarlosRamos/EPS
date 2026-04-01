@@ -28,4 +28,4 @@ target-version = "py312"
 select = ["E", "F", "I", "UP"]
 
 [tool.bandit]
-exclude_dirs = [".venv", "venv", ".ruff_cache"]
+exclude_dirs = [".venv", "venv", ".git", ".ruff_cache", "node_modules"]

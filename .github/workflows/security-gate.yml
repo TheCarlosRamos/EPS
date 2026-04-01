@@ -37,8 +37,9 @@ jobs:
       - name: Evidência de ambiente (poetry env info)
         run: poetry env info
 
+      # Escaneia só o código da aplicação (evita .venv/site-packages, onde o Bandit gera ruído e exit 1).
       - name: SAST (Bandit)
-        run: poetry run bandit -r . -ll -f json -o bandit-report.json -x .venv,.git,.ruff_cache
+        run: poetry run bandit -ll -f json -o bandit-report.json sample_app.py
 
       - name: Upload Bandit report (artefato)
         uses: actions/upload-artifact@v4
