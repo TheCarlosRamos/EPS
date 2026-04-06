@@ -87,3 +87,10 @@ docker-compose up --build
 2. Adicionar mais fontes (DOU/DODF)
 3. Implementar rotação de User-Agents
 4. Integrar com SIEM da PCDF
+
+---
+
+# EPS — SecOps Fase 1
+
+Relatório e checklist: [RELATORIO.md](RELATORIO.md).  
+CI: workflow **Security Gate** em `.github/workflows/security-gate.yml`.

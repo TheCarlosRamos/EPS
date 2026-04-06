@@ -1,0 +1,37 @@
+
+Desafio 01: Onboarding SecOps & Soberania Técnica (Fase 1)
+Objetivo: Estabelecer a infraestrutura base individual e a esteira de segurança (Security Gate), garantindo que cada engenheiro esteja apto a integrar os squads da PCDF com um ambiente padronizado e seguro.
+
+1. Contexto Estratégico
+Alinhado ao Domínio Oito do CISSP (Software Development Security), estabelecemos que a segurança não é um estágio final, mas um atributo intrínseco que deve ser incorporado desde a primeira linha de código. Este domínio preconiza que a proteção de ativos digitais exige a aplicação de controles de segurança em todo o Ciclo de Vida de Desenvolvimento de Software (SDLC), mitigando vulnerabilidades antes que o software entre em produção.
+
+Nesta disciplina, operamos sob a abordagem AI-First, utilizando aceleradores de produtividade como o GitHub Copilot. Entretanto, essa agilidade é equilibrada pelo rigor da Soberania Técnica. Sob a ótica do CISSP, isso significa implementar o princípio da Defesa em Profundidade: embora a IA auxilie na geração de código, a responsabilidade final pela auditoria e integridade da solução é do engenheiro.
+
+Nossa arquitetura deve ser inerentemente resiliente, projetada para operar em ambientes controlados e soberanos (on-premise), atendendo aos requisitos críticos da PCDF. Isso envolve a aplicação prática de conceitos como:
+- Fail-Safe
+- Sandboxing e Isolamento
+- Auditoria Contínua (SAST)
+
+2. Setup Mandatório do Ambiente (Localhost)
+- Python 3.12
+- Poetry
+- Django 5.0+
+- Docker
+
+3. Esteira de Segurança (DevSecOps)
+- SAST (Bandit)
+- SCA (Safety)
+- Linter/Formatter (Ruff)
+- Secret Scanning
+
+O Produto Final: Relatório de Prontidão Técnica
+Inclui evidências de ambiente, segurança e CI.
+
+4. Migração para a Organização rmchaimalm
+Processo via GitHub Education, GitHub Pro, Copilot, Advanced Security.
+
+5. Checkpoint de Prontidão Técnica: Comandos e Prazos
+Inclui comandos Poetry, Bandit, Ruff, Safety.
+
+Prazo final: 30/03/2026
+Aula presencial: 01/04/2026

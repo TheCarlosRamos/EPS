@@ -1,0 +1,75 @@
+# Esteira DevSecOps — Security Gate (Bandit, Ruff, Safety, Secret Scanning)
+name: Security Gate
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+permissions:
+  contents: read
+
+jobs:
+  security-gate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install Poetry
+        uses: snok/install-poetry@v1
+        with:
+          virtualenvs-create: true
+          virtualenvs-in-project: true
+          installer-parallel: true
+
+      - name: Install project dependencies
+        run: poetry install --no-interaction --no-ansi
+
+      - name: Evidência de ambiente (poetry env info)
+        run: poetry env info
+
+      # Escaneia só o código da aplicação (evita .venv/site-packages, onde o Bandit gera ruído e exit 1).
+      - name: SAST (Bandit)
+        run: poetry run bandit -ll -f json -o bandit-report.json sample_app.py
+
+      - name: Upload Bandit report (artefato)
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: bandit-report
+          path: bandit-report.json
+
+      - name: Linter (Ruff)
+        run: poetry run ruff check .
+
+      - name: Formatter (Ruff)
+        run: poetry run ruff format --check .
+
+      # SCA sem conta: audita o venv atual (dependências instaladas pelo Poetry).
+      - name: SCA (pip-audit)
+        run: poetry run pip-audit
+
+      # Safety 3.x exige API key; sem ela a CLI pede (R)/(L) e quebra em ambiente não interativo.
+      - name: SCA (Safety — com SAFETY_API_KEY)
+        env:
+          SAFETY_API_KEY: ${{ secrets.SAFETY_API_KEY }}
+        run: |
+          if [ -z "${SAFETY_API_KEY:-}" ]; then
+            echo "::notice::SAFETY_API_KEY não configurada — pulando Safety scan. Adicione a secret em Settings → Secrets → Actions para ativar."
+            exit 0
+          fi
+          poetry run safety scan
+
+      - name: Secret scanning (Gitleaks)
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
