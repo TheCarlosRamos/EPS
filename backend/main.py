@@ -52,26 +52,28 @@ task_results = {}
 @app.get("/task/{task_id}")
 def get_task_status(task_id: str):
     try:
-        # Verificar se temos o resultado armazenado
-        if task_id in task_results:
-            return {"task_id": task_id, "status": "SUCCESS", "result": task_results[task_id]}
+        print(f"Checking task status for: {task_id}")
         
-        # Tentar obter do Celery (com fallback)
-        from celery.result import AsyncResult
-        result = AsyncResult(task_id, app=run_search.app)
+        # Tentar buscar do Redis cache
+        try:
+            import redis
+            r = redis.Redis(host='redis', port=6379, db=0)
+            cached_result = r.get(f"task:{task_id}")
+            if cached_result:
+                print(f"Found in Redis cache")
+                # Converter string para dict
+                import ast
+                result_dict = ast.literal_eval(cached_result.decode())
+                return {"task_id": task_id, "status": "SUCCESS", "result": result_dict}
+        except Exception as e:
+            print(f"Redis cache error: {e}")
         
-        if result.state == 'SUCCESS':
-            # Armazenar resultado para consultas futuras
-            task_results[task_id] = result.result
-            return {"task_id": task_id, "status": "SUCCESS", "result": result.result}
-        elif result.state == 'PENDING':
-            return {"task_id": task_id, "status": "PENDING"}
-        elif result.state == 'FAILURE':
-            return {"task_id": task_id, "status": "FAILURE", "error": str(result.info)}
-        else:
-            return {"task_id": task_id, "status": result.state}
+        # Se não está no cache, verificar se está em processamento
+        print(f"Task not found in cache, may still be processing")
+        return {"task_id": task_id, "status": "PENDING"}
             
     except Exception as e:
+        print(f"ERROR in get_task_status: {str(e)}")
         return {"task_id": task_id, "status": "ERROR", "error": str(e)}
 
 @app.get("/tasks")

@@ -51,8 +51,19 @@ def run_search(query: str, user_data: dict = None):
     
     log({'action': 'search_completed', 'query': query, 'results_count': len(aggregated)})
     
-    return {
+    final_result = {
         'results': aggregated,
         'graph': graph_data,
         'timeline': timeline_data
     }
+    
+    # Armazenar no Redis para cache
+    try:
+        import redis
+        r = redis.Redis(host='redis', port=6379, db=0)
+        r.setex(f"task:{run_search.request.id}", 3600, str(final_result))  # 1 hora expira
+        print(f"Stored result in Redis for task {run_search.request.id}")
+    except Exception as e:
+        print(f"Could not store in Redis: {e}")
+    
+    return final_result

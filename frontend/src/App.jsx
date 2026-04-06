@@ -30,6 +30,7 @@ export default function App(){
     if (!query || !token) return;
     
     setLoading(true);
+    setResults(null);
     try {
       const response = await axios.post(`${API_URL}/search`, 
         { query }, 
@@ -52,8 +53,11 @@ export default function App(){
           console.log('Task response:', resultResponse.data);
           
           if (resultResponse.data.status === 'SUCCESS') {
+            console.log('SUCCESS - Full response:', resultResponse.data);
+            console.log('SUCCESS - Results:', resultResponse.data.result);
             setResults(resultResponse.data.result);
             if (resultResponse.data.result.graph) {
+              console.log('SUCCESS - Graph data:', resultResponse.data.result.graph);
               setGraph({
                 nodes: resultResponse.data.result.graph.nodes,
                 links: resultResponse.data.result.graph.edges.map(e => ({...e, source: e.source, target: e.target}))
@@ -61,9 +65,10 @@ export default function App(){
             }
             setLoading(false);
           } else if (resultResponse.data.status === 'PENDING' && attempts < maxAttempts) {
+            console.log('PENDING - checking again in 3 seconds');
             setTimeout(checkResult, 3000);
           } else {
-            console.error('Task failed or timeout');
+            console.error('Task failed or timeout - status:', resultResponse.data.status);
             setLoading(false);
           }
         } catch (error) {
@@ -83,9 +88,69 @@ export default function App(){
     }
   };
 
+  const renderResults = () => {
+    console.log('renderResults called with:', results);
+    
+    if (!results || !results.results || results.results.length === 0) {
+      console.log('No results found');
+      return (
+        <div style={{textAlign: 'center', padding: '20px', color: '#666'}}>
+          <h3>Nenhum resultado encontrado</h3>
+          <p>Tente usar termos diferentes ou verificar a conexão.</p>
+        </div>
+      );
+    }
+
+    console.log('Results found:', results.results.length);
+
+    // Agrupar resultados por fonte
+    const resultsBySource = {};
+    results.results.forEach(item => {
+      const source = item.source || 'desconhecido';
+      if (!resultsBySource[source]) {
+        resultsBySource[source] = [];
+      }
+      resultsBySource[source].push(item);
+    });
+
+    console.log('Results by source:', resultsBySource);
+
+    return (
+      <div>
+        <h3>Resultados Encontrados ({results.results.length})</h3>
+        {Object.entries(resultsBySource).map(([source, items]) => (
+          <div key={source} style={{marginBottom: '20px', padding: '15px', border: '1px solid #ddd', borderRadius: '5px'}}>
+            <h4 style={{color: '#0066cc', margin: '0 0 10px 0'}}>
+              📡 {source.charAt(0).toUpperCase() + source.slice(1)} ({items.length})
+            </h4>
+            {items.map((item, index) => (
+              <div key={index} style={{marginBottom: '10px', padding: '10px', backgroundColor: '#f9f9f9', borderRadius: '3px'}}>
+                {item.title && <div><strong>Título:</strong> {item.title}</div>}
+                {item.profile && <div><strong>Perfil:</strong> {item.profile}</div>}
+                {item.url && (
+                  <div>
+                    <strong>URL:</strong> 
+                    <a href={item.url} target="_blank" rel="noopener noreferrer" style={{color: '#0066cc', marginLeft: '5px'}}>
+                      {item.url}
+                    </a>
+                  </div>
+                )}
+                {item.evidence && (
+                  <div style={{fontSize: '12px', color: '#666'}}>
+                    <strong>Evidência:</strong> {item.evidence}
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        ))}
+      </div>
+    );
+  };
+
   return (
     <div style={{fontFamily:'Arial',padding:20}}>
-      <h1>Buscador OSINT – PCDF</h1>
+      <h1>🔍 Buscador OSINT – PCDF</h1>
       
       <div style={{marginBottom:20}}>
         <input 
@@ -96,24 +161,24 @@ export default function App(){
           style={{padding:10, width:300, marginRight:10}}
         />
         <button onClick={handleSearch} disabled={loading || !token}>
-          {loading ? 'Buscando...' : 'Buscar'}
+          {loading ? '🔍 Buscando...' : '🔎 Buscar'}
         </button>
-        {!token && <span style={{marginLeft:10, color:'red'}}>Carregando token...</span>}
+        {!token && <span style={{marginLeft:10, color:'red'}}>🔐 Carregando token...</span>}
       </div>
 
       {results && (
         <div style={{display:'flex', gap:20}}>
-          <div style={{flex:1}}>
-            <h3>Resultados</h3>
-            <pre style={{background:'#f5f5f5', padding:10, maxHeight:400, overflow:'auto'}}>
-              {JSON.stringify(results.results, null, 2)}
-            </pre>
+          <div style={{flex:2}}>
+            {renderResults()}
           </div>
           
           <div style={{flex:1}}>
-            <h3>Grafo de Vínculos</h3>
-            <div style={{height:400, border:'1px solid #ccc'}}>
+            <h3>🕸️ Grafo de Vínculos</h3>
+            <div style={{height:400, border:'1px solid #ccc', borderRadius: '5px'}}>
               <ForceGraph2D graphData={graph} />
+            </div>
+            <div style={{marginTop: '10px', fontSize: '12px', color: '#666'}}>
+              {graph.nodes.length} nós • {graph.links.length} conexões
             </div>
           </div>
         </div>
