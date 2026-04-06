@@ -1,0 +1,12 @@
+fastapi
+uvicorn
+celery
+redis
+requests
+beautifulsoup4
+pydantic
+reportlab
+PyJWT
+playwright
+minio
+neo4j
