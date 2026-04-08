@@ -8,6 +8,8 @@ from models import Investigacao
 from pdf_service import gerar_pdf
 import jwt
 import time
+import os
+import json
 
 app = FastAPI(title="OSINT Automatizado – PCDF")
 
@@ -57,19 +59,19 @@ def get_task_status(task_id: str):
         # Tentar buscar do Redis cache
         try:
             import redis
-            r = redis.Redis(host='redis', port=6379, db=0)
+            redis_host = os.getenv('REDIS_HOST', 'localhost')
+            r = redis.Redis(host=redis_host, port=6379, db=0)
             cached_result = r.get(f"task:{task_id}")
             if cached_result:
                 print(f"Found in Redis cache")
-                # Converter string para dict
-                import ast
-                result_dict = ast.literal_eval(cached_result.decode())
+                # Parsear JSON para dicionário
+                result_dict = json.loads(cached_result.decode('utf-8'))
                 return {"task_id": task_id, "status": "SUCCESS", "result": result_dict}
         except Exception as e:
             print(f"Redis cache error: {e}")
         
         # Se não está no cache, verificar se está em processamento
-        print(f"Task not found in cache, may still be processing")
+        print(f"Task {task_id} not found in cache, status PENDING")
         return {"task_id": task_id, "status": "PENDING"}
             
     except Exception as e:

@@ -40,9 +40,9 @@ export default function App(){
       const taskId = response.data.task_id;
       console.log('Task ID:', taskId);
       
-      // Poll for results com limite de tentativas
+      // Poll for results com limite de tentativas aumentado
       let attempts = 0;
-      const maxAttempts = 10;
+      const maxAttempts = 20; // Aumentado para 1 minuto (20 * 3s)
       
       const checkResult = async () => {
         try {
@@ -53,17 +53,21 @@ export default function App(){
           console.log('Task response:', resultResponse.data);
           
           if (resultResponse.data.status === 'SUCCESS') {
-            console.log('SUCCESS - Full response:', resultResponse.data);
-            console.log('SUCCESS - Results:', resultResponse.data.result);
-            setResults(resultResponse.data.result);
-            if (resultResponse.data.result.graph) {
-              console.log('SUCCESS - Graph data:', resultResponse.data.result.graph);
-              setGraph({
-                nodes: resultResponse.data.result.graph.nodes,
-                links: resultResponse.data.result.graph.edges.map(e => ({...e, source: e.source, target: e.target}))
-              });
+            console.log('✅ SUCCESS - Full response data:', resultResponse.data);
+            
+            if (resultResponse.data.result) {
+              console.log('📊 Results array:', resultResponse.data.result.results);
+              setResults(resultResponse.data.result);
+              
+              if (resultResponse.data.result.graph) {
+                console.log('🕸️ Graph data:', resultResponse.data.result.graph);
+                setGraph({
+                  nodes: resultResponse.data.result.graph.nodes,
+                  links: resultResponse.data.result.graph.edges.map(e => ({...e, source: e.source, target: e.target}))
+                });
+              }
+              setLoading(false);
             }
-            setLoading(false);
           } else if (resultResponse.data.status === 'PENDING' && attempts < maxAttempts) {
             console.log('PENDING - checking again in 3 seconds');
             setTimeout(checkResult, 3000);
