@@ -1,5 +1,10 @@
 
 services:
+  tor:
+    image: osminogin/tor-simple:latest
+    ports:
+      - "9050:9050"
+
   api:
     build: backend
     ports:
@@ -19,6 +24,7 @@ services:
       - redis
       - minio
       - neo4j
+      - tor
   redis:
     image: redis:7
   minio:
