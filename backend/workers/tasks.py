@@ -43,8 +43,10 @@ def run_search(query: str, user_data: dict = None):
                     if 'url' in item:
                         evidence_path = f"evidence_{int(time.time())}_{scraper.name}.png"
                         try:
-                            # Captura real com Playwright
-                            item['evidence'] = capture(item['url'], evidence_path)
+                            # Captura real com Playwright - armazena apenas a URL/path
+                            capture_result = capture(item['url'], evidence_path)
+                            # Armazenar apenas o path do arquivo como string
+                            item['evidence'] = f"captured:{capture_result.get('file', evidence_path)}"
                         except Exception as playwright_err:
                             print(f"Playwright not available: {playwright_err}, using placeholder")
                             item['evidence'] = "captured_snapshot_placeholder"

@@ -25,26 +25,56 @@ class JusbrasilScraper(BaseScraper):
         try:
             headers = {
                 "User-Agent": random.choice(self.USER_AGENTS),
-                "Accept-Language": "pt-BR,pt;q=0.9"
+                "Accept-Language": "pt-BR,pt;q=0.9",
+                "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"
             }
             r = requests.get(url, headers=headers, timeout=10, proxies=proxies)
+            print(f"[JusbrasilScraper] Status: {r.status_code}, Content length: {len(r.text)}")
             
             soup = BeautifulSoup(r.text, 'html.parser')
             res = []
             
-            # Tentar múltiplos seletores
-            for a in soup.select('a.resultado-busca-link, a[href*="/busca/"], .resultado-busca link'):
-                if a.text.strip() and 'href' in a.attrs:
-                    href = a['href']
-                    if any(x in href for x in ['jusbrasil.com.br', '/processos/', '/jurisprudencia/']):
-                        res.append({
-                            'title': a.text.strip(),
-                            'url': href if href.startswith('http') else f'https://www.jusbrasil.com.br{href}',
+            # Múltiplos seletores para encontrar resultados
+            selectors = [
+                'a.resultado-busca-link',           # Seletor original
+                'a[href*="/busca/"]',               # Links de busca
+                'div.container-resultado a',        # Container padrão
+                'a[data-testid*="resultado"]',      # Com data-testid
+                'a',                                # Fallback: todos os links
+            ]
+            
+            found_results = False
+            for selector in selectors:
+                for a in soup.select(selector)[:10]:  # Limitar a 10 por seletor
+                    text = a.text.strip() if a.text else None
+                    href = a.get('href', '')
+                    
+                    # Filtrar apenas links relevantes
+                    if text and len(text) > 5 and href and any(x in href for x in ['jusbrasil.com.br', '/busca/', '/processos/', '/jurisprudencia/']):
+                        url_full = href if href.startswith('http') else f'https://www.jusbrasil.com.br{href}'
+                        
+                        result = {
+                            'title': text[:100],
+                            'url': url_full,
                             'source': 'jusbrasil',
                             'tipo': 'jurisprudencia' if '/jurisprudencia/' in href else 'processo'
-                        })
+                        }
+                        
+                        # Evitar duplicatas
+                        if not any(r['url'] == result['url'] for r in res):
+                            res.append(result)
+                            found_results = True
+                
+                if found_results and len(res) >= 3:
+                    break
             
-            return res[:20]
+            if res:
+                print(f"[JusbrasilScraper] Found {len(res)} results")
+            else:
+                print(f"[JusbrasilScraper] No results found")
+            
+            return res[:20]  # Limitar a 20 resultados
+            
         except Exception as e:
-            print(f"Jusbrasil scraper error: {e}")
+            print(f"[JusbrasilScraper] Error: {e}")
             return []

@@ -18,7 +18,7 @@ class GoogleScraper(BaseScraper):
 
     def search(self, intent):
         q = intent['value']
-        url = f"https://www.google.com/search?q={q}&hl=pt-BR"
+        url = f"https://www.google.com/search?q={q}&hl=pt-BR&num=10"
         
         # Suporte a proxy para anonimato (RNF01)
         proxy = os.getenv('HTTP_PROXY')
@@ -28,35 +28,80 @@ class GoogleScraper(BaseScraper):
             try:
                 headers = {
                     "User-Agent": random.choice(self.USER_AGENTS),
-                    "Accept-Language": "pt-BR,pt;q=0.9"
+                    "Accept-Language": "pt-BR,pt;q=0.9",
+                    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"
                 }
                 r = requests.get(url, headers=headers, timeout=10, proxies=proxies)
+                print(f"[GoogleScraper] Status: {r.status_code}, Content length: {len(r.text)}")
                 
                 if r.status_code == 403:
-                    print(f"Google returned 403 (blocked), attempt {attempt+1}/3")
+                    print(f"[GoogleScraper] 403 Forbidden (blocked), attempt {attempt+1}/3")
+                    time.sleep(2 ** attempt)
+                    continue
+                
+                if r.status_code != 200:
+                    print(f"[GoogleScraper] Unexpected status {r.status_code}, retrying...")
                     time.sleep(2 ** attempt)
                     continue
                     
                 soup = BeautifulSoup(r.text, 'html.parser')
                 results = []
                 
-                for g in soup.select('div.g, div[data-sokoban-container]'):
-                    title = g.select_one('h3')
-                    link = g.select_one('a[href^="/url"]')
-                    
-                    if title and link and 'href' in link.attrs:
-                        url_clean = link['href'].split('&')[0].replace('/url?q=', '')
-                        if url_clean.startswith('http'):
-                            results.append({
-                                "title": title.text.strip(),
-                                "url": url_clean,
-                                "source": "google"
-                            })
+                # Tentar múltiplos seletores diferentes
+                selectors = [
+                    'div.g',  # Seletor padrão do Google
+                    'div[data-sokoban-container]',  # Novo layout
+                    'div.Gd8Csd',  # Container de resultado
+                    'a[href^="http"][data-rw]',  # Links com data-rw
+                ]
                 
-                return results if results else []
-            except requests.exceptions.RequestException as e:
-                print(f"Google scraper request error (attempt {attempt+1}/3): {e}")
+                found_links = False
+                for selector in selectors:
+                    for item in soup.select(selector)[:5]:  # Limitar a 5 por seletor
+                        # Tentar encontrar título
+                        title_elem = item.select_one('h3, [role="heading"]')
+                        
+                        # Tentar encontrar link
+                        link_elem = None
+                        for link in item.select('a'):
+                            if link.get('href', '').startswith(('http', '/url')):
+                                link_elem = link
+                                break
+                        
+                        if title_elem and link_elem and 'href' in link_elem.attrs:
+                            href = link_elem['href']
+                            # Limpar URL do Google
+                            if '/url?q=' in href:
+                                url_clean = href.split('&')[0].replace('/url?q=', '')
+                            else:
+                                url_clean = href
+                            
+                            if url_clean.startswith(('http://', 'https://')):
+                                result = {
+                                    "title": title_elem.text.strip()[:100],
+                                    "url": url_clean,
+                                    "source": "google"
+                                }
+                                # Evitar duplicatas
+                                if not any(r['url'] == result['url'] for r in results):
+                                    results.append(result)
+                                    found_links = True
+                    
+                    if found_links and len(results) >= 3:
+                        break
+                
+                if results:
+                    print(f"[GoogleScraper] Found {len(results)} results")
+                    return results
+                else:
+                    print(f"[GoogleScraper] No results found with any selector, attempt {attempt+1}/3")
+                    
+            except requests.exceptions.Timeout:
+                print(f"[GoogleScraper] Timeout (attempt {attempt+1}/3)")
+                time.sleep(2 ** attempt)
+            except Exception as e:
+                print(f"[GoogleScraper] Error (attempt {attempt+1}/3): {e}")
                 time.sleep(2 ** attempt)
         
-        print("Google scraper: All retries exhausted")
+        print("[GoogleScraper] All retries exhausted")
         return []
