@@ -28,7 +28,6 @@ def run_search(query: str, user_data: dict = None):
     
     for scraper in all_scrapers():
         try:
-            # Filtro por tipo de intenção (RF01)
             if intent['type'] not in scraper.supported_types:
                 print(f"Skipping scraper {scraper.name} for intent type {intent['type']}")
                 continue
@@ -38,13 +37,19 @@ def run_search(query: str, user_data: dict = None):
             print(f"Scraper {scraper.name} returned {len(scraper_results)} results")
             results[scraper.name] = scraper_results
             
-            # Captura de evidências (RF04)
+            # Captura de evidências (RF04) - Agora habilitado com Playwright
             for item in scraper_results[:3]:
                 try:
-                    evidence_path = f"evidence_{int(time.time())}_{scraper.name}.png"
-                    # Chamada real para o Playwright (exige dependências no Docker)
-                    # item['evidence'] = capture(item['url'], evidence_path)
-                    item['evidence'] = "captured_snapshot_placeholder"
+                    if 'url' in item:
+                        evidence_path = f"evidence_{int(time.time())}_{scraper.name}.png"
+                        try:
+                            # Captura real com Playwright
+                            item['evidence'] = capture(item['url'], evidence_path)
+                        except Exception as playwright_err:
+                            print(f"Playwright not available: {playwright_err}, using placeholder")
+                            item['evidence'] = "captured_snapshot_placeholder"
+                    else:
+                        item['evidence'] = "no_url_to_capture"
                     item['ts'] = int(time.time())
                 except Exception as ex:
                     print(f"Evidence capture error: {ex}")
