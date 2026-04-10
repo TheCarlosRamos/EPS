@@ -7,6 +7,7 @@ from scrapers.instagram.scraper import InstagramScraper
 from scrapers.jusbrasil.scraper import JusbrasilScraper
 from scrapers.dou.scraper import DOUScraper
 from scrapers.dodf.scraper import DODFScraper
+from scrapers.wikipedia.scraper import WikipediaScraper
 from audit.logger import log
 from evidence.snapshot import capture
 from analysis.inference import infer
@@ -16,11 +17,12 @@ import os, time, json
 redis_host = os.getenv('REDIS_HOST', 'localhost')
 app = Celery('osint', broker=f'redis://{redis_host}:6379/0')
 
-register(GoogleScraper())  # ✅ HABILITADO - Com proxy Tor
+register(GoogleScraper())     # ✅ HABILITADO - Com proxy Tor
 register(InstagramScraper())
 register(JusbrasilScraper())
-register(DOUScraper())      # ✅ Diário Oficial da União
-register(DODFScraper())     # ✅ Diário Oficial DF
+register(DOUScraper())        # ✅ Diário Oficial da União
+register(DODFScraper())       # ✅ Diário Oficial DF
+register(WikipediaScraper())  # ✅ Wikipedia - API MediaWiki
 
 @app.task
 def run_search(query: str, user_data: dict = None):

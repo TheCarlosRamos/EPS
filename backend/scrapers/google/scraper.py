@@ -26,33 +26,33 @@ class GoogleScraper(BaseScraper):
     ]
 
     def _get_demo_results(self, q):
-        """Demo results for testing"""
+        """Demo results for testing - usando endpoints corretos"""
         q_lower = q.lower()
         results = []
         
-        # Gerar resultados demo realistas
+        # Gerar resultados demo realistas com endpoints CORRETOS
         demo_entries = [
             {
-                "title": f"Resultado para '{q}' - LinkedIn Profile",
-                "url": f"https://www.linkedin.com/in/search?keywords={q.replace(' ', '%20')}"
-            },
-            {
-                "title": f"'{q}' - Facebook",
-                "url": f"https://www.facebook.com/search?q={q.replace(' ', '%20')}"
-            },
-            {
                 "title": f"Informações sobre {q}",
-                "url": f"https://www.wikipedia.org/search?search={q.replace(' ', '%20')}"
+                "url": f"https://pt.wikipedia.org/w/api.php?action=query&list=search&srsearch={q.replace(' ', '+')}&format=json",
+                "source": "wikipedia",
+                "note": "API endpoint - use /wiki/ para artigos diretos"
             },
             {
                 "title": f"{q} - GitHub",
-                "url": f"https://github.com/search?q={q.replace(' ', '%20')}"
+                "url": f"https://github.com/search?q={q.replace(' ', '%20')}",
+                "source": "github"
             },
             {
-                "title": f"Perfil de {q}",
-                "url": f"https://www.twitter.com/search?q={q.replace(' ', '%20')}"
+                "title": f"{q} - Twitter/X",
+                "url": f"https://x.com/search?q={q.replace(' ', '%20')}",
+                "source": "twitter"
             }
         ]
+        
+        # NOTA: LinkedIn e Facebook removidos porque não permitem scraping público
+        # LinkedIn redireciona todas as buscas públicas para login
+        # Facebook bloqueia agressivamente scrapers
         
         return demo_entries[:3]
 

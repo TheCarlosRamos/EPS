@@ -34,24 +34,42 @@ class DOUScraper:
     def _search_real(self, q):
         """Tenta busca real na API do DOU"""
         try:
-            url = 'https://www.in.gov.br/web/dou/-/pesquisa'
-            params = {'search': q}
-            r = self.session.get(url, params=params, timeout=12)
-            soup = BeautifulSoup(r.text, 'html.parser')
-            res = []
+            # ENDPOINT CORRETO: usar busca por formulário POST na URL do DOU
+            # A URL /web/dou/-/pesquisa retorna "não encontrado" em versões recentes
+            # Alternativa: usar a busca no portal da Imprensa Nacional
+            url = 'https://www.in.gov.br/inicio'
             
-            for elem in soup.find_all('a', href=True):
-                title = elem.get_text(strip=True)
-                href = elem.get('href', '')
-                if q.lower() in title.lower() and len(title) > 10 and 'in.gov.br' in href:
-                    res.append({
-                        'title': title[:100],
-                        'url': href if href.startswith('http') else f'https://www.in.gov.br{href}',
-                        'source': 'dou',
-                        'tipo': 'diario_oficial'
-                    })
+            # Tentar busca com parâmetro de busca
+            search_urls = [
+                'https://www.in.gov.br/web/guest/pesquisas',  # Portal de buscas
+                'https://www.in.gov.br/search',  # Busca genérica
+            ]
             
-            return list({r['url']: r for r in res}.values())[:5]
+            for base_url in search_urls:
+                try:
+                    params = {'searchQuery': q}
+                    r = self.session.get(base_url, params=params, timeout=10)
+                    if r.status_code == 200:
+                        soup = BeautifulSoup(r.text, 'html.parser')
+                        res = []
+                        
+                        for elem in soup.find_all('a', href=True):
+                            title = elem.get_text(strip=True)
+                            href = elem.get('href', '')
+                            if q.lower() in title.lower() and len(title) > 10 and 'in.gov.br' in href:
+                                res.append({
+                                    'title': title[:100],
+                                    'url': href if href.startswith('http') else f'https://www.in.gov.br{href}',
+                                    'source': 'dou',
+                                    'tipo': 'diario_oficial'
+                                })
+                        
+                        if res:
+                            return list({r['url']: r for r in res}.values())[:5]
+                except:
+                    continue
+            
+            return []
         except:
             return []
     
