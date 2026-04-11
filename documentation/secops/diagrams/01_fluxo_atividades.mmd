@@ -1,0 +1,18 @@
+---
+title: "Fluxo de Atividades — Onboarding SecOps"
+---
+flowchart TD
+    A["1 - Configuracao do Ambiente\n(Zero Trust & Isolamento)"] --> B["2 - Configuracao do Projeto\n(Poetry + Dependencias)"]
+    B --> C["3 - Pipeline CI/CD\n(GitHub Actions)"]
+    C --> D["4 - Security Gates\n(Analise de Seguranca)"]
+    D --> E["5 - Correcoes & Ajustes"]
+    E --> F["6 - Relatorio de Prontidao\n(REPORT.md)"]
+    F --> G["7 - Revisao Humana &\nDeclaracao de Soberania"]
+
+    style A fill:#1e3a5f,stroke:#4a90d9,color:#fff
+    style B fill:#1e3a5f,stroke:#4a90d9,color:#fff
+    style C fill:#1e3a5f,stroke:#4a90d9,color:#fff
+    style D fill:#2d5016,stroke:#5cb85c,color:#fff
+    style E fill:#7a4a00,stroke:#f0ad4e,color:#fff
+    style F fill:#1e3a5f,stroke:#4a90d9,color:#fff
+    style G fill:#5a1a5e,stroke:#c77dff,color:#fff

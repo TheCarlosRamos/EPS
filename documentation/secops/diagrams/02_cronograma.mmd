@@ -1,0 +1,26 @@
+---
+title: "Cronograma de Execucao — SecOps Onboarding"
+---
+gantt
+    dateFormat  YYYY-MM-DD
+    axisFormat  %d/%m
+
+    section Ambiente
+    Python 3.12 + venv isolado           :done, env, 2026-03-21, 1d
+
+    section Projeto
+    Poetry init + pyproject.toml         :done, proj1, 2026-03-21, 1d
+    Deps dev (Bandit, Safety, Ruff)      :done, proj2, 2026-03-21, 1d
+
+    section CI/CD
+    GitHub Actions workflow              :done, ci1, 2026-03-21, 1d
+    Fix requires-python (PEP 440)        :done, fix1, 2026-03-21, 1d
+
+    section Security Gates
+    Bandit - Analise estatica            :done, sec1, 2026-03-21, 1d
+    Safety - Auditoria de CVEs           :done, sec2, 2026-03-21, 1d
+    Ruff - Linter e conformidade         :done, sec3, 2026-03-21, 1d
+
+    section Relatorio
+    Preenchimento do REPORT.md           :done, rep1, 2026-03-21, 1d
+    Revisao e declaracao de soberania    :done, rep2, 2026-03-21, 1d

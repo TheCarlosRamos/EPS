@@ -1,0 +1,30 @@
+---
+title: "Arquitetura do Pipeline de Seguranca"
+---
+flowchart LR
+    subgraph Trigger["Trigger"]
+        P["push/PR -> main"]
+    end
+
+    subgraph Pipeline["GitHub Actions — Security Gate"]
+        direction TB
+        S1["Checkout codigo"]
+        S2["Setup Python 3.12"]
+        S3["Install Poetry + deps"]
+        S4["Bandit\n(SAST)"]
+        S5["Safety\n(SCA/CVE)"]
+        S6["Ruff\n(Linter)"]
+        S1 --> S2 --> S3 --> S4 --> S5 --> S6
+    end
+
+    subgraph Result["Resultado"]
+        OK["Pipeline Verde"]
+    end
+
+    P --> S1
+    S6 --> OK
+
+    style S4 fill:#2d5016,stroke:#5cb85c,color:#fff
+    style S5 fill:#2d5016,stroke:#5cb85c,color:#fff
+    style S6 fill:#2d5016,stroke:#5cb85c,color:#fff
+    style OK fill:#145214,stroke:#5cb85c,color:#fff
