@@ -1,0 +1,106 @@
+# =========================
+# Project-specific ignores
+# =========================
+EPICS_AND_ISSUES.md
+
+# =========================
+# Python
+# =========================
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg-info/
+*.egg
+dist/
+build/
+eggs/
+*.whl
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Virtual environments
+.venv/
+venv/
+ENV/
+env/
+
+# pytest
+.pytest_cache/
+htmlcov/
+.coverage
+.coverage.*
+coverage.xml
+*.cover
+
+# mypy
+.mypy_cache/
+
+# Ruff
+.ruff_cache/
+
+# =========================
+# IDE / Editors
+# =========================
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.project
+.classpath
+.settings/
+
+# =========================
+# OS files
+# =========================
+.DS_Store
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+._*
+
+# =========================
+# Environment files
+# =========================
+.env
+.env.local
+.env.*.local
+!.env.example
+
+# =========================
+# Docker volumes
+# =========================
+docker-volumes/
+data/
+postgres-data/
+redis-data/
+minio-data/
+vault-data/
+
+# =========================
+# SonarQube
+# =========================
+.scannerwork/
+.sonar/
+
+# =========================
+# Node / Frontend
+# =========================
+node_modules/
+.next/
+.nuxt/
+
+# =========================
+# Logs
+# =========================
+*.log
+logs/
+
+# =========================
+# Secrets (safety net)
+# =========================
+*.pem
+*.key
+credentials.json
+secrets.json

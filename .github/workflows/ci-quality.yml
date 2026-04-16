@@ -1,0 +1,121 @@
+name: CI Quality & Security
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lint-format:
+    name: Ruff Lint & Format Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install Ruff
+        run: uv pip install --system "ruff>=0.8.0"
+
+      - name: Ruff lint check
+        run: ruff check . --config documentation/secops/pyproject.toml
+
+      - name: Ruff format check
+        run: ruff format --check . --config documentation/secops/pyproject.toml
+
+  static-security:
+    name: Bandit Security Scan
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install Bandit
+        run: uv pip install --system "bandit>=1.8.0"
+
+      - name: Run Bandit security scan
+        run: |
+          TARGETS=""
+          for dir in src backend/src workers documentation/secops/src; do
+            if [ -d "$dir" ]; then
+              TARGETS="$TARGETS $dir"
+            fi
+          done
+          if [ -z "$TARGETS" ]; then
+            echo "No source directories found, scanning documentation/secops/src"
+            TARGETS="documentation/secops/src"
+          fi
+          bandit -r $TARGETS --severity-level medium --confidence-level medium -f json -o bandit-report.json || true
+          bandit -r $TARGETS --severity-level medium --confidence-level medium
+
+      - name: Upload Bandit report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: bandit-report
+          path: bandit-report.json
+          retention-days: 30
+
+  dependency-audit:
+    name: Safety Dependency Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install Safety
+        run: uv pip install --system "safety>=3.0.0"
+
+      - name: Run Safety dependency scan
+        run: |
+          cd documentation/secops
+          safety scan || echo "Safety scan completed with findings (non-blocking for initial setup)"
+        continue-on-error: true
+
+  sonarqube-analysis:
+    name: SonarQube Analysis
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: SonarQube Scan
+        uses: SonarSource/sonarqube-scan-action@v5
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+        if: env.SONAR_TOKEN != ''
+
+      - name: SonarQube Quality Gate
+        uses: SonarSource/sonarqube-quality-gate-action@v1
+        timeout-minutes: 5
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        if: env.SONAR_TOKEN != ''
