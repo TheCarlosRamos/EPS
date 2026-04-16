@@ -3,6 +3,9 @@
 # =========================
 EPICS_AND_ISSUES.md
 
+# Claude Code local settings (personal, not shared)
+.claude/settings.local.json
+
 # =========================
 # Python
 # =========================
