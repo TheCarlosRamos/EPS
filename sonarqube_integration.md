@@ -1,99 +1,47 @@
-# SonarQube Community Edition - Integration Guide
+# SonarCloud Integration Guide
 
-This document describes the manual steps required to fully integrate SonarQube CE into the project CI/CD pipeline.
-
----
-
-## 1. Deploy SonarQube CE (Self-Hosted)
-
-Create `infra/docker-compose.sonarqube.yml`:
-
-```yaml
-services:
-  sonarqube:
-    image: sonarqube:lts-community
-    container_name: sonarqube
-    depends_on:
-      sonar-db:
-        condition: service_healthy
-    ports:
-      - "9000:9000"
-    environment:
-      SONAR_JDBC_URL: jdbc:postgresql://sonar-db:5432/sonarqube
-      SONAR_JDBC_USERNAME: sonarqube
-      SONAR_JDBC_PASSWORD: sonarqube
-    volumes:
-      - sonarqube_data:/opt/sonarqube/data
-      - sonarqube_extensions:/opt/sonarqube/extensions
-      - sonarqube_logs:/opt/sonarqube/logs
-    healthcheck:
-      test: ["CMD-SHELL", "curl -f http://localhost:9000/api/system/status | grep -q UP"]
-      interval: 30s
-      timeout: 10s
-      retries: 5
-
-  sonar-db:
-    image: postgres:16-alpine
-    container_name: sonar-db
-    environment:
-      POSTGRES_USER: sonarqube
-      POSTGRES_PASSWORD: sonarqube
-      POSTGRES_DB: sonarqube
-    volumes:
-      - sonar_postgres_data:/var/lib/postgresql/data
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U sonarqube"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-
-volumes:
-  sonarqube_data:
-  sonarqube_extensions:
-  sonarqube_logs:
-  sonar_postgres_data:
-```
-
-Start SonarQube:
-
-```bash
-docker compose -f infra/docker-compose.sonarqube.yml up -d
-```
-
-Access at `http://localhost:9000` (default credentials: `admin` / `admin`). **Change the password on first login.**
+This document describes the manual steps required to integrate SonarCloud (cloud-hosted SonarQube) into the project CI/CD pipeline. SonarCloud is free for open-source projects and requires no self-hosted infrastructure.
 
 ---
 
-## 2. Create Project & Generate Token
+## 1. Sign Up & Import Repository
 
-1. Log in to SonarQube at `http://localhost:9000`
-2. Go to **Projects > Create Project > Manually**
-3. Set:
-   - **Project display name:** `Buscador OSINT Automatizado`
-   - **Project key:** `buscador-osint-automatizado`
-   - **Main branch name:** `main`
-4. Go to **My Account > Security > Generate Tokens**
-5. Create a token:
+1. Go to [sonarcloud.io](https://sonarcloud.io) and click **Log in with GitHub**
+2. Authorize SonarCloud to access your GitHub account
+3. Click **Import an organization from GitHub**
+4. Select the organization **FCTE-UNB-EPS5**
+5. Choose the **Free plan** (available for public repositories)
+6. Click **Import organization**
+7. On the next screen, select the repository **buscador-osint-automatizado-eps_2026_1_grupo_1**
+8. Click **Set Up** to create the SonarCloud project
+
+After import, note your:
+- **Organization key:** `fcte-unb-eps5` (lowercase, visible in SonarCloud URL)
+- **Project key:** will be shown on the project setup page (e.g., `FCTE-UNB-EPS5_buscador-osint-automatizado-eps_2026_1_grupo_1`)
+
+---
+
+## 2. Generate a Token
+
+1. In SonarCloud, go to **My Account > Security** (click your avatar top-right > My Account > Security tab)
+2. Under **Generate Tokens**:
    - **Name:** `github-actions-ci`
    - **Type:** Project Analysis Token
-   - **Project:** `buscador-osint-automatizado`
    - **Expires in:** 90 days (or as per your policy)
-6. **Copy the token** (you won't see it again)
+3. Click **Generate**
+4. **Copy the token** (you won't see it again)
 
 ---
 
-## 3. Add GitHub Actions Secrets
+## 3. Add GitHub Actions Secret
 
-Go to the repository settings: **Settings > Secrets and variables > Actions > New repository secret**
-
-Add two secrets:
+Go to the repository: **Settings > Secrets and variables > Actions > New repository secret**
 
 | Secret Name | Value |
 |---|---|
 | `SONAR_TOKEN` | The token generated in step 2 |
-| `SONAR_HOST_URL` | Your SonarQube server URL (e.g., `http://your-server:9000`) |
 
-> **Note:** If using a self-hosted SonarQube, your server must be accessible from GitHub Actions runners. For a local-only setup, consider using a tunnel (e.g., ngrok) or deploying SonarQube to a cloud VM.
+> **Note:** No `SONAR_HOST_URL` is needed — the SonarCloud action automatically uses `https://sonarcloud.io`.
 
 ---
 
@@ -102,7 +50,8 @@ Add two secrets:
 Create this file at the repository root:
 
 ```properties
-sonar.projectKey=buscador-osint-automatizado
+sonar.organization=fcte-unb-eps5
+sonar.projectKey=FCTE-UNB-EPS5_buscador-osint-automatizado-eps_2026_1_grupo_1
 sonar.projectName=Buscador OSINT Automatizado
 sonar.projectVersion=0.1.0
 
@@ -123,13 +72,17 @@ sonar.python.coverage.reportPaths=coverage.xml
 sonar.sourceEncoding=UTF-8
 ```
 
+> **Important:** Update `sonar.organization` and `sonar.projectKey` with the actual values shown in your SonarCloud project settings if they differ from the above.
+
 ---
 
 ## 5. Configure Quality Gate
 
-In SonarQube UI: **Quality Gates > Create**
+SonarCloud comes with the **"Sonar way"** default quality gate which is already good. To customize:
 
-Create a custom quality gate named `Buscador OSINT` with these conditions:
+1. In SonarCloud, go to **Organization Settings > Quality Gates**
+2. Click **Create** to create a custom quality gate named `Buscador OSINT`
+3. Add these conditions:
 
 | Metric | Operator | Value |
 |---|---|---|
@@ -139,27 +92,23 @@ Create a custom quality gate named `Buscador OSINT` with these conditions:
 | Reliability Rating on New Code | is worse than | A |
 | Security Rating on New Code | is worse than | A |
 
-Then set it as default for the project:
-- Go to **Projects > Buscador OSINT Automatizado > Project Settings > Quality Gate**
-- Select `Buscador OSINT`
+4. Go to **Project Settings > Quality Gate** and select `Buscador OSINT`
 
-### Enable Secret Detection
+### PR Decoration (Automatic)
 
-1. Go to **Administration > Configuration > General Settings > Secrets**
-2. Ensure "Detect secrets" is **enabled**
-3. Go to **Quality Profiles > Python** and verify that security rules (S6290, S6418, etc.) are active
+SonarCloud automatically decorates pull requests with analysis results (comments showing quality gate status, new issues, coverage). This works out of the box once the GitHub App is authorized.
 
 ---
 
 ## 6. Update Branch Ruleset (After First Successful Run)
 
-Once SonarQube is running and the CI has executed at least one successful SonarQube Analysis, update the branch protection ruleset to require the SonarQube check:
+Once SonarCloud has run successfully at least once, add it as a required status check:
 
 ```bash
 # Get the current ruleset ID
 RULESET_ID=$(gh api repos/FCTE-UNB-EPS5/buscador-osint-automatizado-eps_2026_1_grupo_1/rulesets --jq '.[0].id')
 
-# Update the ruleset to add SonarQube as a required status check
+# Update the ruleset to add SonarCloud as a required status check
 gh api repos/FCTE-UNB-EPS5/buscador-osint-automatizado-eps_2026_1_grupo_1/rulesets/$RULESET_ID \
   --method PUT \
   --input - <<'EOF'
@@ -187,8 +136,7 @@ gh api repos/FCTE-UNB-EPS5/buscador-osint-automatizado-eps_2026_1_grupo_1/rulese
         "dismiss_stale_reviews_on_push": true,
         "require_code_owner_review": false,
         "require_last_push_approval": false,
-        "required_review_thread_resolution": true,
-        "automatic_copilot_review_enabled": false
+        "required_review_thread_resolution": true
       }
     },
     {
@@ -199,7 +147,7 @@ gh api repos/FCTE-UNB-EPS5/buscador-osint-automatizado-eps_2026_1_grupo_1/rulese
           { "context": "Ruff Lint & Format Check" },
           { "context": "Bandit Security Scan" },
           { "context": "Safety Dependency Check" },
-          { "context": "SonarQube Analysis" }
+          { "context": "SonarCloud Analysis" }
         ]
       }
     },
@@ -210,14 +158,3 @@ gh api repos/FCTE-UNB-EPS5/buscador-osint-automatizado-eps_2026_1_grupo_1/rulese
 }
 EOF
 ```
-
----
-
-## 7. Verify Integration
-
-After completing all steps above:
-
-1. Create a test PR with a Python file
-2. Check that the `SonarQube Analysis` job appears in the PR checks
-3. Verify the Quality Gate result appears as a PR comment (if webhook is configured) or in the SonarQube dashboard
-4. Confirm that a failing Quality Gate blocks the PR merge

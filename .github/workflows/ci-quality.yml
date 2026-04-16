@@ -97,8 +97,8 @@ jobs:
           safety scan || echo "Safety scan completed with findings (non-blocking for initial setup)"
         continue-on-error: true
 
-  sonarqube-analysis:
-    name: SonarQube Analysis
+  sonarcloud-analysis:
+    name: SonarCloud Analysis
     runs-on: ubuntu-latest
     if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository
     steps:
@@ -106,14 +106,13 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: SonarQube Scan
-        uses: SonarSource/sonarqube-scan-action@v5
+      - name: SonarCloud Scan
+        uses: SonarSource/sonarcloud-scan-action@v4
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
         if: env.SONAR_TOKEN != ''
 
-      - name: SonarQube Quality Gate
+      - name: SonarCloud Quality Gate
         uses: SonarSource/sonarqube-quality-gate-action@v1
         timeout-minutes: 5
         env:
