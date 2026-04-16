@@ -1,0 +1,65 @@
+"""Tests for core configuration settings."""
+
+import pytest
+
+from src.core.config import CelerySettings, RedisSettings
+
+
+@pytest.mark.unit
+class TestRedisSettings:
+    def test_default_url_no_password(self):
+        settings = RedisSettings(host="localhost", port=6379, db=0, password="")
+        assert settings.url == "redis://localhost:6379/0"
+
+    def test_url_with_password(self):
+        settings = RedisSettings(host="redis.internal", port=6380, db=2, password="s3cret")
+        assert settings.url == "redis://:s3cret@redis.internal:6380/2"
+
+    def test_default_values(self):
+        settings = RedisSettings()
+        assert settings.host == "localhost"
+        assert settings.port == 6379
+        assert settings.db == 0
+        assert settings.password == ""
+        assert settings.max_memory == "512mb"
+
+    def test_custom_values(self):
+        settings = RedisSettings(host="10.0.0.1", port=6380, db=3, password="pw", max_memory="1gb")
+        assert settings.host == "10.0.0.1"
+        assert settings.port == 6380
+        assert settings.db == 3
+        assert settings.max_memory == "1gb"
+
+    def test_from_env(self, monkeypatch):
+        monkeypatch.setenv("REDIS_HOST", "env-host")
+        monkeypatch.setenv("REDIS_PORT", "7777")
+        monkeypatch.setenv("REDIS_DB", "5")
+        monkeypatch.setenv("REDIS_PASSWORD", "env-pw")
+        settings = RedisSettings()
+        assert settings.url == "redis://:env-pw@env-host:7777/5"
+
+
+@pytest.mark.unit
+class TestCelerySettings:
+    def test_defaults(self):
+        settings = CelerySettings()
+        assert settings.task_serializer == "json"
+        assert settings.result_serializer == "json"
+        assert settings.accept_content == ["json"]
+        assert settings.task_track_started is True
+        assert settings.worker_hijack_root_logger is False
+        assert settings.task_default_queue == "default"
+
+    def test_json_only_serialization(self):
+        """Ensure pickle is never accepted (security requirement)."""
+        settings = CelerySettings()
+        assert "pickle" not in settings.accept_content
+        assert settings.task_serializer != "pickle"
+        assert settings.result_serializer != "pickle"
+
+    def test_from_env(self, monkeypatch):
+        monkeypatch.setenv("CELERY_BROKER_URL", "redis://custom:6379/1")
+        monkeypatch.setenv("CELERY_RESULT_BACKEND", "redis://custom:6379/2")
+        settings = CelerySettings()
+        assert settings.broker_url == "redis://custom:6379/1"
+        assert settings.result_backend == "redis://custom:6379/2"

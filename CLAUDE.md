@@ -13,7 +13,7 @@ Automated OSINT (Open Source Intelligence) search tool for the PCDF (Policia Civ
 - **Frontend:** React, TypeScript, Vite
 - **Database:** PostgreSQL (metadata + audit), MinIO (evidence + dossiers)
 - **Infrastructure:** Docker Compose, Nginx, HashiCorp Vault
-- **CI/CD:** GitHub Actions (Ruff, Bandit, Safety)
+- **CI/CD:** GitHub Actions (Ruff, Bandit, Safety, pytest + coverage)
 
 ## Repository Structure
 
@@ -26,14 +26,23 @@ Automated OSINT (Open Source Intelligence) search tool for the PCDF (Policia Civ
 │       ├── code-review/        # /code-review — review against project standards
 │       └── contributing/       # /contributing — commit, PR, and CI workflow guide
 ├── .github/workflows/
-│   └── ci-quality.yml          # Ruff + Bandit + Safety pipeline
+│   └── ci-quality.yml          # Ruff + Bandit + Safety + Tests & Coverage pipeline
+├── backend/                    # Backend application (Celery + Redis queue system)
+│   ├── pyproject.toml          # Backend deps, pytest, coverage, ruff config
+│   ├── src/
+│   │   ├── core/               # Celery app instance, configuration
+│   │   └── queue/              # Decoupled queue module (retry, DLQ, health, monitoring)
+│   └── tests/
+│       ├── unit/               # Unit tests (no external services, fakeredis)
+│       └── integration/        # Integration tests (requires Redis)
 ├── documentation/
 │   ├── analysis/               # Project analysis (PRINCE2, PMBOK)
 │   ├── diagrams/               # Architecture diagrams (Mermaid)
 │   ├── secops/                 # Security operations config
 │   │   └── pyproject.toml      # Ruff + Bandit + Safety configuration
 │   └── specs/                  # Project specifications
-├── src/                        # Application source code
+├── src/                        # Application source code (legacy stub)
+├── docker-compose.yml          # Dev/test services (Redis, PostgreSQL)
 ├── sonarqube_integration.md    # SonarCloud setup guide
 └── CLAUDE.md                   # This file
 ```
@@ -66,6 +75,23 @@ Thresholds: severity >= medium, confidence >= medium
 ```bash
 bandit -r src/ --severity-level medium --confidence-level medium
 ```
+
+## Testing
+
+Configuration: `backend/pyproject.toml`
+
+```bash
+# Unit tests only (no Docker required)
+cd backend && python -m pytest tests/unit/ -m unit --cov=src --cov-report=term-missing
+
+# Integration tests (requires Redis: docker compose up redis -d)
+cd backend && python -m pytest tests/integration/ -m integration --cov=src --cov-report=term-missing
+
+# Full suite with HTML + XML coverage reports
+cd backend && python -m pytest --cov=src --cov-report=html --cov-report=xml --cov-report=term-missing
+```
+
+Coverage threshold: 60% (enforced in CI)
 
 ## Commit Convention
 
