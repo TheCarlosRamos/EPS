@@ -298,6 +298,33 @@ This runs in parallel with the existing Ruff, Bandit, and Safety jobs.
 
 ---
 
+## Persistence Guarantees
+
+Redis is configured with both AOF (Append-Only File) and RDB snapshots for production-grade task persistence. This ensures Celery tasks in the queue survive Redis process restarts and container restarts.
+
+### Configuration (`infra/redis/redis.conf`)
+
+| Setting | Value | Rationale |
+|---|---|---|
+| `appendonly` | `yes` | Every write is logged to the AOF file |
+| `appendfsync` | `everysec` | Fsync once per second — at most 1s of data loss on crash |
+| `aof-use-rdb-preamble` | `yes` | Faster AOF loads using RDB format for historical data |
+| `save` | `60 1000` | RDB snapshot every 60s if 1000+ writes occurred |
+| `maxmemory-policy` | `allkeys-lru` | Evicts least-recently-used keys under memory pressure |
+
+### Durability Model
+
+- **Normal shutdown / restart:** Zero data loss. AOF is flushed before shutdown.
+- **Unexpected crash:** At most 1 second of data loss (`appendfsync everysec`).
+- **Task redelivery:** `BaseScraperTask` uses `acks_late=True`, so tasks are redelivered by Celery if the worker crashes before acknowledging completion. Combined with AOF, this provides at-least-once delivery semantics.
+
+### Verification
+
+- **CI:** Integration tests verify AOF is enabled, appendfsync policy is correct, and data survives AOF rewrite (`tests/integration/test_redis_persistence.py`).
+- **Manual:** `bash infra/tests/test_redis_restart.sh` writes data, restarts the Redis container, and verifies data is still present.
+
+---
+
 ## Security Considerations
 
 - **JSON-only serialization** — Pickle is never used (prevents arbitrary code execution, Bandit B301)

@@ -13,6 +13,7 @@ dependencies = [
     "prometheus-client>=0.20.0",
     "structlog>=24.0.0",
     "fastapi>=0.115.0",
+    "hvac>=2.1.0",
 ]
 
 [project.optional-dependencies]
@@ -70,5 +71,5 @@ line-length = 120
 select = ["E", "F", "W", "I", "N", "S", "B", "A", "C4", "UP"]
 
 [tool.ruff.lint.per-file-ignores]
-"tests/**/*.py" = ["S101", "S106"]
+"tests/**/*.py" = ["S101", "S105", "S106"]
 "src/queue/__init__.py" = ["A005"]
