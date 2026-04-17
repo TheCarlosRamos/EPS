@@ -25,6 +25,23 @@ class RedisSettings(BaseSettings):
         return f"redis://{self.host}:{self.port}/{self.db}"
 
 
+class VaultSettings(BaseSettings):
+    """HashiCorp Vault connection settings.
+
+    When enabled=False (default), secrets fall back to environment variables.
+    This allows development without a Vault instance.
+    """
+
+    model_config = {"env_prefix": "VAULT_"}
+
+    enabled: bool = False
+    addr: str = "http://localhost:8200"
+    token: str = ""
+    mount_point: str = "secret"
+    proxy_path: str = "osint/proxy"
+    timeout: int = 5
+
+
 class CelerySettings(BaseSettings):
     """Celery application settings."""
 

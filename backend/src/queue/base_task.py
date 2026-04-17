@@ -1,4 +1,4 @@
-"""Base scraper task with retry logic, audit logging, and DLQ integration."""
+"""Base scraper task with retry logic, audit logging, and Vault integration."""
 
 from __future__ import annotations
 
@@ -8,9 +8,21 @@ from typing import Any
 import structlog
 from celery import Task
 
+from src.core.vault import VaultClient
 from src.queue.retry import MAX_RETRIES, get_retry_delay
 
 logger = structlog.get_logger(__name__)
+
+# Module-level singleton — shared across all task instances in the worker process.
+_vault_client: VaultClient | None = None
+
+
+def _get_vault_client() -> VaultClient:
+    """Return the module-level VaultClient singleton."""
+    global _vault_client  # noqa: PLW0603
+    if _vault_client is None:
+        _vault_client = VaultClient()
+    return _vault_client
 
 
 class BaseScraperTask(Task):
@@ -19,6 +31,7 @@ class BaseScraperTask(Task):
     Features:
     - Exponential backoff retry: 60s / 300s / 900s (max 3 retries)
     - Structured audit logging on start and completion
+    - Pre-execution hook: resolves proxy credentials from Vault (or env vars)
     - Dead letter queue integration on final failure
     """
 
@@ -27,17 +40,28 @@ class BaseScraperTask(Task):
     acks_late = True
 
     _start_time: float | None = None
+    _proxy_credentials: dict[str, str] | None = None
 
     def before_start(self, task_id: str, args: tuple, kwargs: dict) -> None:
-        """Log task start for audit trail."""
+        """Log task start and resolve proxy credentials for audit trail."""
         self._start_time = time.monotonic()
+
+        vault = _get_vault_client()
+        self._proxy_credentials = vault.get_proxy_credentials()
+
         logger.info(
             "task_started",
             task_name=self.name,
             task_id=task_id,
             args=args,
             kwargs=kwargs,
+            proxy_configured=bool(self._proxy_credentials.get("proxy_url")),
         )
+
+    @property
+    def proxy_credentials(self) -> dict[str, str]:
+        """Proxy credentials resolved during before_start(). Empty dict if not yet resolved."""
+        return self._proxy_credentials or {}
 
     def after_return(self, status: str, retval: Any, task_id: str, args: tuple, kwargs: dict, einfo: Any) -> None:
         """Log task completion for audit trail."""
