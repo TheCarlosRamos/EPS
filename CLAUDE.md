@@ -122,3 +122,7 @@ Types: `feat/`, `fix/`, `chore/`, `docs/`, `ci/`, `refactor/`
 
 - `/code-review` — Review code changes against project standards, security, and LGPD compliance
 - `/contributing` — Guide for commits, PRs, branch naming, and CI troubleshooting
+
+## Agents
+
+- `secops-reviewer` — Security-focused PR reviewer: checks hardcoded secrets, container security, TLS, evidence hashing (SHA-256/CPP Art. 158), audit logging, LGPD compliance, and dependency vulnerabilities
