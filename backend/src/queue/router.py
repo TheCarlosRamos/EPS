@@ -13,6 +13,7 @@ from typing import Any
 import redis as redis_lib
 from fastapi import APIRouter, HTTPException, Query
 
+from src.core.config import RedisSettings
 from src.queue.dlq import DLQManager
 
 router = APIRouter(prefix="/api/admin/dlq", tags=["admin", "dlq"])
@@ -23,7 +24,8 @@ def _get_dlq_manager() -> DLQManager:
 
     In production, this would use dependency injection via FastAPI Depends().
     """
-    client = redis_lib.from_url("redis://localhost:6379/0", decode_responses=True)
+    settings = RedisSettings()
+    client = redis_lib.from_url(settings.url, decode_responses=True)
     return DLQManager(client)
 
 

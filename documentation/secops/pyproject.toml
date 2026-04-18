@@ -31,7 +31,7 @@ select = ["E", "F", "W", "I", "N", "S", "B", "A", "C4", "UP"]
 known-first-party = ["src", "backend"]
 
 [tool.ruff.lint.per-file-ignores]
-"**/tests/**/*.py" = ["S101", "S106"]
+"**/tests/**/*.py" = ["S101", "S105", "S106"]
 "**/src/queue/__init__.py" = ["A005"]
 
 [tool.bandit]
