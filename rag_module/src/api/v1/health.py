@@ -1,22 +1,19 @@
 import httpx
 from fastapi import APIRouter
+
 from src.config import settings
 
 router = APIRouter()
 
+
 @router.get("/health")
 async def health_check():
-    status = {
-        "status": "ok",
-        "neo4j": "unknown",
-        "qdrant": "unknown",
-        "redis": "unknown",
-        "ollama": "unknown"
-    }
-    
+    status = {"status": "ok", "neo4j": "unknown", "qdrant": "unknown", "redis": "unknown", "ollama": "unknown"}
+
     # Check Neo4j
     try:
         from neo4j import GraphDatabase
+
         driver = GraphDatabase.driver(settings.NEO4J_URI, auth=(settings.NEO4J_USER, settings.NEO4J_PASSWORD))
         driver.verify_connectivity()
         status["neo4j"] = "ok"
@@ -28,6 +25,7 @@ async def health_check():
     # Check Qdrant
     try:
         from qdrant_client import QdrantClient
+
         client = QdrantClient(host=settings.QDRANT_HOST, port=settings.QDRANT_PORT)
         client.get_collections()
         status["qdrant"] = "ok"
@@ -38,6 +36,7 @@ async def health_check():
     # Check Redis
     try:
         from redis import asyncio as aioredis
+
         redis = await aioredis.from_url(settings.REDIS_URL)
         await redis.ping()
         status["redis"] = "ok"
