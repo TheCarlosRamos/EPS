@@ -25,6 +25,10 @@ Automated OSINT (Open Source Intelligence) search tool for the PCDF (Policia Civ
 │   └── skills/
 │       ├── code-review/        # /code-review — review against project standards
 │       └── contributing/       # /contributing — commit, PR, and CI workflow guide
+├── .cursor/                    # Cursor — skills and agent mirrored for the IDE
+│   ├── rules/                  # Always-on rules (project context)
+│   ├── agents/                 # Symlinks → .claude/agents/
+│   └── skills/                 # Symlinks → .claude/skills/ (single source of truth)
 ├── .github/workflows/
 │   └── ci-quality.yml          # Ruff + Bandit + Safety + Tests & Coverage pipeline
 ├── backend/                    # Backend application (Celery + Redis queue system)
@@ -52,6 +56,7 @@ Automated OSINT (Open Source Intelligence) search tool for the PCDF (Policia Civ
 ### Python (Ruff)
 
 Configuration: `documentation/secops/pyproject.toml`
+
 - Target: Python 3.12
 - Line length: 120
 - Rules: E, F, W, I, N, S, B, A, C4, UP

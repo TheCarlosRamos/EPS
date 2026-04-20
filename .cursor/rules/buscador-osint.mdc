@@ -1,0 +1,13 @@
+---
+description: Buscador OSINT (UnB/EPS) context — where skills, agents, and the repo guide live.
+alwaysApply: true
+---
+
+# Buscador OSINT — agent context
+
+- Overview, stack, layout, and conventions: read `CLAUDE.md` at the repository root.
+- **Project skills (Cursor):** `.cursor/skills/` — directories with `SKILL.md` (symlinked from `.claude/skills/`; edit the canonical content under `.claude/skills/` for a single source of truth).
+- **SecOps agent (reference):** `.cursor/agents/secops-reviewer.md` (symlink to `.claude/agents/`).
+- LGPD, evidence hashing (SHA-256), no secrets in code, and CI alignment are covered in `CLAUDE.md` and in the `code-review` and `contributing` skills.
+
+When the user asks for a PR review, contribution workflow, or a security checklist, read the matching `SKILL.md` under `.cursor/skills/<name>/` before answering.
