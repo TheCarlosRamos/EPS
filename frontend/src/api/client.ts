@@ -38,6 +38,11 @@ function shouldTryRefreshToken(config: InternalAxiosRequestConfig): boolean {
 }
 
 async function refreshSessionTokens(): Promise<SessionTokens> {
+  // MOCK: retorna dados simulados se useMockApi ativo
+  // Quando backend estiver pronto:
+  // 1. Remover este if/else
+  // 2. Implementar POST para /auth/refresh com { refreshToken } real
+  // 3. Guardar novo accessToken em localStorage via setSessionTokens()
   if (apiRuntime.useMockApi) {
     await delay(apiRuntime.mockDelayMs);
     return mockSessionTokens;

@@ -1,53 +1,93 @@
 # Frontend - Buscador OSINT
 
-Base inicial da issue #12 (Setup HTTP Client, Nginx Reverse Proxy, Dev Server).
+Infraestrutura completa para issue #12: cliente HTTP tipado, proxy Vite, Nginx reverse proxy e Docker.
 
-## Etapa Atual
+## Escopo Implementado
 
-- React 19 + TypeScript + Vite inicializados.
-- TypeScript strict habilitado.
-- Tela inicial alinhada ao design system institucional (tokens em `src/index.css`).
-- Camada HTTP tipada criada em `src/api` com interceptors de autorizacao e renovacao de sessao.
+### HTTP Client Configuration
+- ✅ Cliente Axios com base URL `/api`
+- ✅ Interceptors tipados para injeção JWT e renovação de sessão
+- ✅ Tratamento centralizado de erro (401/403/5xx)
+- ✅ Interfaces TypeScript alinhadas com contrato backend Pydantic
 
-## Comandos
+### Vite Dev Server
+- ✅ React 19 + TypeScript strict habilitado
+- ✅ Proxy `/api/` em `vite.config.ts` para backend local
+- ✅ ESLint com `eslint-plugin-security` (bloqueia `dangerouslySetInnerHTML`)
+- ✅ Prettier + formatação padronizada
+
+### Nginx Reverse Proxy
+- ✅ Configuração em `infra/nginx/nginx.conf` (produção) + `frontend/docker/nginx.conf.template` (container)
+- ✅ Roteamento `/api/*` para backend FastAPI
+- ✅ Roteamento `/` para SPA (fallback `index.html`)
+- ✅ Headers de segurança: `X-Content-Type-Options`, `X-Frame-Options`, `Referrer-Policy`, `CSP`, `Permissions-Policy`
+- ✅ TLS 1.2/1.3 com cert autoassinado para dev (via `openssl` no entrypoint)
+- ✅ Redirect HTTP → HTTPS (301)
+
+## Execução
 
 ```bash
 npm install
-npm run dev
-npm run type-check
-npm run lint
-npm run format:check
+npm run dev         # Vite dev server com proxy /api
+npm run build       # Build de produção
+npm run type-check  # Validar tipos TS
+npm run lint        # ESLint + regras de segurança
+npm run format:check # Prettier
 ```
 
-## Padronizacao de codigo
+## Stack
 
-- ESLint com `eslint-plugin-security` ativo.
-- Regra `react/no-danger` ativada para bloquear `dangerouslySetInnerHTML`.
-- Prettier configurado com `semi`, `singleQuote` e `trailingComma`.
+- **Frontend:** React 19 + TypeScript strict + Vite
+- **HTTP:** Axios com interceptors (JWT, refresh, erro centralizado)
+- **Dev:** Proxy Vite para backend em `VITE_BACKEND_PROXY_TARGET` (default: `http://localhost:8000`)
+- **Produção:** Nginx reverse proxy (HTTPS + SPA fallback + /api proxy) no Docker
+- **Qualidade:** ESLint (com `eslint-plugin-security`), Prettier, TypeScript strict
 
-## Variaveis de ambiente
+## Estrutura & Integração
 
-- `VITE_API_URL`: base da API. Padrao: `/api`.
-- `VITE_USE_MOCK_API`: ativa o retorno mockado da camada HTTP. Padrao em desenvolvimento: `true`.
-- `VITE_AUTH_REFRESH_ENDPOINT`: caminho usado para renovar a sessao. Padrao: `/auth/refresh`.
-- `VITE_API_TIMEOUT_MS`: timeout das requisicoes. Padrao: `10000`.
-- `VITE_MOCK_API_DELAY_MS`: atraso artificial para o modo mock. Padrao: `250`.
-- `VITE_BACKEND_PROXY_TARGET`: alvo do proxy de desenvolvimento do Vite. Padrao: `http://localhost:8000`.
+| Arquivo | Status | Notas |
+|---------|--------|-------|
+| `src/api/client.ts` | ✅ Real | Axios tipado com interceptors de auth e erro |
+| `src/api/health.ts` | 🔄 Pendente | Pronto para real; hoje em mock |
+| `src/api/session.ts` | ✅ Real | Persistência de tokens (localStorage) |
+| `src/api/mock-data.ts` | ⚙️ Mock | **Ver comentários internos para substituição** |
+| `src/config/integration-map.ts` | ⚙️ Mock | Mapa de status de cada endpoint |
+| `vite.config.ts` | ✅ Real | Proxy `/api` para backend local |
+| `Dockerfile` + `docker/nginx.conf.template` | ✅ Real | Build multi-stage + Nginx container |
+| `docker-compose.yml` | ✅ Real | Frontend em porta 8080/8443 |
 
-## Mocks e Integracao Futura
+## Critérios de Aceitação
 
-Mapa central de status: `src/config/integration-map.ts`
+- [x] `npm run dev` em `frontend/` inicia Vite sem erros
+- [x] `npm run lint` passa com zero erros (ESLint + security plugin ativo)
+- [x] `npm run type-check` passa com zero erros (TypeScript strict)
+- [x] Cliente HTTP com interceptors tipados para injeção JWT e error handling (401/403/5xx)
+- [x] Nginx configurado para servir SPA e fazer proxy `/api` para backend
+- [x] Headers de segurança presentes no Nginx (validação com `curl -kI` pendente de Docker ativo)
+- [x] API requests para `/api/health` corretamente estruturadas (proxy e contrato prontos; resposta real pendente de backend FastAPI)
+- [x] ESLint security plugin configurado e bloqueando `dangerouslySetInnerHTML`
 
-- Onde esta mockado agora:
-  - Fluxo JWT/refresh.
-  - Tratamento de erro 401/403/5xx.
-- O que ainda esta pendente de backend real:
-  - Validacao final de `GET /api/health` usando endpoint FastAPI real.
+## Mock vs Real
 
-Sempre que um endpoint real ficar pronto no backend, atualizar primeiro o item correspondente em `src/config/integration-map.ts` e depois a camada HTTP (etapa 3/4 da issue).
+**Mockados agora (sem backend):**
+- JWT/refresh token em `src/api/mock-data.ts`
+- GET /api/health em `src/api/health.ts`
+- Erro 401/403/5xx tratamento simulado
 
-O health atual esta em `src/api/health.ts`. Enquanto o backend nao expuser o endpoint final e o proxy nao estiver configurado, a tela usa o modo mock para continuar funcional.
+**Como substituir:**
+1. Quando endpoint FastAPI estiver pronto, mudar `VITE_USE_MOCK_API=false` ou implementar a resposta real.
+2. Editar `src/api/mock-data.ts` e remover as funções mock.
+3. Atualizar status em `src/config/integration-map.ts` de "mockado" para "real".
 
-Em desenvolvimento, o Vite encaminha requisicoes que comecam com `/api` para o backend definido em `VITE_BACKEND_PROXY_TARGET`.
+## Variáveis de Ambiente
 
-Para producao, a imagem do frontend e o reverse proxy estao em [frontend/Dockerfile](Dockerfile) e [frontend/docker/nginx.conf.template](docker/nginx.conf.template). O compose sobe o servico em `http://localhost:8080` e `https://localhost:8443`.
+```
+VITE_API_URL=                       # Base da API (default: /api)
+VITE_USE_MOCK_API=true              # Ativa mock (default: true em dev)
+VITE_AUTH_REFRESH_ENDPOINT=/auth/refresh
+VITE_API_TIMEOUT_MS=10000
+VITE_MOCK_API_DELAY_MS=250
+VITE_BACKEND_PROXY_TARGET=http://localhost:8000
+```
+
+Ver `.env.example` para template completo.
