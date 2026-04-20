@@ -49,3 +49,5 @@ Sempre que um endpoint real ficar pronto no backend, atualizar primeiro o item c
 O health atual esta em `src/api/health.ts`. Enquanto o backend nao expuser o endpoint final e o proxy nao estiver configurado, a tela usa o modo mock para continuar funcional.
 
 Em desenvolvimento, o Vite encaminha requisicoes que comecam com `/api` para o backend definido em `VITE_BACKEND_PROXY_TARGET`.
+
+Para producao, a configuracao de reverse proxy e servico da SPA esta em [infra/nginx/nginx.conf](../infra/nginx/nginx.conf).
