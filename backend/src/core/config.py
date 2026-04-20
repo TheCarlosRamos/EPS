@@ -14,7 +14,7 @@ class PostgresSettings(BaseSettings):
     model_config = {"env_prefix": "POSTGRES_"}
 
     user: str = "osint"
-    password: str = "osint_dev"
+    password: str = ""
     host: str = "localhost"
     port: int = 5432
     db: str = "osint_dev"
@@ -84,5 +84,7 @@ def get_beat_database_url() -> str:
         return settings.beat_dburi
     pg = PostgresSettings()
     u = quote_plus(pg.user)
-    p = quote_plus(pg.password)
-    return f"postgresql+psycopg://{u}:{p}@{pg.host}:{pg.port}/{pg.db}"
+    if pg.password:
+        p = quote_plus(pg.password)
+        return f"postgresql+psycopg://{u}:{p}@{pg.host}:{pg.port}/{pg.db}"
+    return f"postgresql+psycopg://{u}@{pg.host}:{pg.port}/{pg.db}"

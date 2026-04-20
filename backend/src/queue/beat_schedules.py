@@ -7,7 +7,8 @@ Schedules use Celery ``schedule`` / ``crontab`` objects so they can be stored by
 ``sqlalchemy-celery-beat`` (DatabaseScheduler) in PostgreSQL.
 """
 
-from celery.schedules import crontab, schedule as interval_schedule
+from celery.schedules import crontab
+from celery.schedules import schedule as interval_schedule
 
 BEAT_SCHEDULE = {
     "health-check-scrapers": {
