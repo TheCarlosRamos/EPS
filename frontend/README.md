@@ -32,6 +32,7 @@ npm run format:check
 - `VITE_AUTH_REFRESH_ENDPOINT`: caminho usado para renovar a sessao. Padrao: `/auth/refresh`.
 - `VITE_API_TIMEOUT_MS`: timeout das requisicoes. Padrao: `10000`.
 - `VITE_MOCK_API_DELAY_MS`: atraso artificial para o modo mock. Padrao: `250`.
+- `VITE_BACKEND_PROXY_TARGET`: alvo do proxy de desenvolvimento do Vite. Padrao: `http://localhost:8000`.
 
 ## Mocks e Integracao Futura
 
@@ -46,3 +47,5 @@ Mapa central de status: `src/config/integration-map.ts`
 Sempre que um endpoint real ficar pronto no backend, atualizar primeiro o item correspondente em `src/config/integration-map.ts` e depois a camada HTTP (etapa 3/4 da issue).
 
 O health atual esta em `src/api/health.ts`. Enquanto o backend nao expuser o endpoint final e o proxy nao estiver configurado, a tela usa o modo mock para continuar funcional.
+
+Em desenvolvimento, o Vite encaminha requisicoes que comecam com `/api` para o backend definido em `VITE_BACKEND_PROXY_TARGET`.
