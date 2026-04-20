@@ -13,7 +13,7 @@ class TestBeatScheduleIntegration:
 
     def test_health_check_interval(self):
         entry = BEAT_SCHEDULE["health-check-scrapers"]
-        assert entry["schedule"] == 300.0  # 5 minutes
+        assert entry["schedule"].run_every.total_seconds() == 300
 
     def test_retention_purge_schedule_exists(self):
         assert "data-retention-purge" in BEAT_SCHEDULE

@@ -3,7 +3,21 @@
 All secrets are loaded from environment variables — never hardcoded.
 """
 
+from urllib.parse import quote_plus
+
 from pydantic_settings import BaseSettings
+
+
+class PostgresSettings(BaseSettings):
+    """PostgreSQL connection defaults (docker-compose compatible)."""
+
+    model_config = {"env_prefix": "POSTGRES_"}
+
+    user: str = "osint"
+    password: str = "osint_dev"
+    host: str = "localhost"
+    port: int = 5432
+    db: str = "osint_dev"
 
 
 class RedisSettings(BaseSettings):
@@ -55,3 +69,20 @@ class CelerySettings(BaseSettings):
     task_track_started: bool = True
     worker_hijack_root_logger: bool = False
     task_default_queue: str = "default"
+    beat_dburi: str | None = None
+    beat_schema: str | None = None
+
+
+def get_beat_database_url() -> str:
+    """URL for sqlalchemy-celery-beat (Celery Beat schedule persistence in PostgreSQL).
+
+    Uses ``CELERY_BEAT_DBURI`` when set; otherwise builds from ``POSTGRES_*``.
+    """
+
+    settings = CelerySettings()
+    if settings.beat_dburi:
+        return settings.beat_dburi
+    pg = PostgresSettings()
+    u = quote_plus(pg.user)
+    p = quote_plus(pg.password)
+    return f"postgresql+psycopg://{u}:{p}@{pg.host}:{pg.port}/{pg.db}"
