@@ -1,4 +1,16 @@
 services:
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    environment:
+      NGINX_BACKEND_UPSTREAM: ${FRONTEND_BACKEND_UPSTREAM:-host.docker.internal:8000}
+    ports:
+      - "8080:80"
+      - "8443:443"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
   redis:
     image: redis:7-alpine
     command: redis-server /usr/local/etc/redis/redis.conf

@@ -50,4 +50,4 @@ O health atual esta em `src/api/health.ts`. Enquanto o backend nao expuser o end
 
 Em desenvolvimento, o Vite encaminha requisicoes que comecam com `/api` para o backend definido em `VITE_BACKEND_PROXY_TARGET`.
 
-Para producao, a configuracao de reverse proxy e servico da SPA esta em [infra/nginx/nginx.conf](../infra/nginx/nginx.conf).
+Para producao, a imagem do frontend e o reverse proxy estao em [frontend/Dockerfile](Dockerfile) e [frontend/docker/nginx.conf.template](docker/nginx.conf.template). O compose sobe o servico em `http://localhost:8080` e `https://localhost:8443`.
