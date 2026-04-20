@@ -1,38 +1,38 @@
-﻿# Design System â€” Buscador OSINT Automatizado Â· PCDF
+# Design System — Buscador OSINT Automatizado · PCDF
 
-> **Disciplina:** Engenharia de Produto de Software (EPS) Â· UnB  
-> **Projeto:** Buscador OSINT Automatizado â€” PolÃ­cia Civil do Distrito Federal  
-> **VersÃ£o:** 1.0.0  
-
----
-
-## VisÃ£o Geral
-
-<img src="./assets/01-design-system-cover-pcdf-osint.png" alt="Design System Cover â€” PCDF OSINT" width="100%">
-
-O design system do **Buscador OSINT Automatizado** garante consistÃªncia visual, acessibilidade e identidade institucional da PCDF em toda a interface. A identidade Ã© construÃ­da sobre o azul institucional e o dourado da PCDF.
+> **Disciplina:** Engenharia de Produto de Software (EPS) · UnB  
+> **Projeto:** Buscador OSINT Automatizado — Polícia Civil do Distrito Federal  
+> **Versão:** 1.0.0  
 
 ---
 
-## ðŸŽ¨ Design Tokens
+## Visão Geral
 
-### Paleta de Cores â€” Primary (Azul Institucional PCDF)
+<img src="./assets/01-design-system-cover-pcdf-osint.png" alt="Design System Cover — PCDF OSINT" width="100%">
+
+O design system do **Buscador OSINT Automatizado** garante consistência visual, acessibilidade e identidade institucional da PCDF em toda a interface. A identidade é construída sobre o azul institucional e o dourado da PCDF.
+
+---
+
+## 🎨 Design Tokens
+
+### Paleta de Cores — Primary (Azul Institucional PCDF)
 
 <img src="./assets/02-primary-color-scale.png" alt="Primary Color Scale" width="100%">
 
-### Secondary â€” Dourado Institucional
+### Secondary — Dourado Institucional
 
 <img src="./assets/03-secondary-color-scale.png" alt="Secondary Color Scale" width="100%">
 
-### Status â€” Success
+### Status — Success
 
 <img src="./assets/04-success-color-scale.png" alt="Success Color Scale" width="100%">
 
-### Status â€” Warning
+### Status — Warning
 
 <img src="./assets/05-warning-color-scale.png" alt="Warning Color Scale" width="100%">
 
-### Status â€” Error
+### Status — Error
 
 <img src="./assets/06-error-color-scale.png" alt="Error Color Scale" width="100%">
 
@@ -42,13 +42,13 @@ O design system do **Buscador OSINT Automatizado** garante consistÃªncia visua
 
 ### Spacing Scale (Base unit: 4px)
 
-Escala: `4px Â· 8px Â· 12px Â· 16px Â· 24px Â· 32px Â· 48px Â· 64px`
+Escala: `4px · 8px · 12px · 16px · 24px · 32px · 48px · 64px`
 
 <img src="./assets/08-spacing-scale.png" alt="Spacing Scale" width="100%">
 
 ### Border Radius
 
-Tokens: `none (0) Â· sm (4px) Â· md (8px) Â· lg (12px) Â· xl (16px) Â· full (9999px)`
+Tokens: `none (0) · sm (4px) · md (8px) · lg (12px) · xl (16px) · full (9999px)`
 
 <img src="./assets/09-border-radius-tokens.png" alt="Border Radius Tokens" width="100%">
 
@@ -58,61 +58,61 @@ Tokens: `none (0) Â· sm (4px) Â· md (8px) Â· lg (12px) Â· xl (16px) Â·
 
 ---
 
-## ðŸ“ Tipografia
+## 📝 Tipografia
 
-### Headings â€” IBM Plex Mono (Display)
+### Headings — IBM Plex Mono (Display)
 
-Escala: `H1 (48px) Â· H2 (36px) Â· H3 (28px) Â· H4 (22px) Â· H5 (18px) Â· H6 (14px)`
+Escala: `H1 (48px) · H2 (36px) · H3 (28px) · H4 (22px) · H5 (18px) · H6 (14px)`
 
-*(Veja frame `HEADINGS â€” IBM Plex Mono` no Figma â€” PÃ¡gina: ðŸ“ Typography)*
+*(Veja frame `HEADINGS — IBM Plex Mono` no Figma — Página: 📝 Typography)*
 
-### Body & Utility Types â€” Inter + IBM Plex Mono
+### Body & Utility Types — Inter + IBM Plex Mono
 
-Estilos: `Body LG Â· Body MD Â· Body SM Â· Caption Â· Overline Â· Code`
+Estilos: `Body LG · Body MD · Body SM · Caption · Overline · Code`
 
-*(Veja frame `BODY & UTILITY TYPES` no Figma â€” PÃ¡gina: ðŸ“ Typography)*
+*(Veja frame `BODY & UTILITY TYPES` no Figma — Página: 📝 Typography)*
 
 ---
 
-## ðŸ§© Componentes
+## 🧩 Componentes
 
-### BotÃµes
+### Botões
 
-Variantes: `primary Â· secondary Â· gold (CTA) Â· danger Â· ghost` | Tamanhos: `LG (44px) Â· SM (32px)`
+Variantes: `primary · secondary · gold (CTA) · danger · ghost` | Tamanhos: `LG (44px) · SM (32px)`
 
 <img src="./assets/11-button-variants.png" alt="Button Variants" width="100%">
 
 ### Form Inputs
 
-Campos: `CPF (mono) Â· Nome/Vulgo Â· E-mail Â· Telefone (mono) Â· Busca Federada`
+Campos: `CPF (mono) · Nome/Vulgo · E-mail · Telefone (mono) · Busca Federada`
 
 <img src="./assets/12-form-inputs.png" alt="Form Inputs" width="100%">
 
-### Data Table â€” Resultados da Busca OSINT
+### Data Table — Resultados da Busca OSINT
 
-Status badges: `CONFIRMADO Â· ANALISANDO Â· PENDENTE Â· DESCARTADO`
+Status badges: `CONFIRMADO · ANALISANDO · PENDENTE · DESCARTADO`
 
 <img src="./assets/13-data-table.png" alt="Data Table" width="100%">
 
 ### Alerts, Badges & Status Indicators
 
-Alerts: `success Â· warning Â· error Â· info` | Badges: `ATIVO Â· INATIVO Â· PRIORIDADE Â· NOVO Â· OSINT Â· SIGILOSO`
+Alerts: `success · warning · error · info` | Badges: `ATIVO · INATIVO · PRIORIDADE · NOVO · OSINT · SIGILOSO`
 
 <img src="./assets/14-alerts-and-badges.png" alt="Alerts and Badges" width="100%">
 
-### Cards â€” Result & Stats
+### Cards — Result & Stats
 
 <img src="./assets/15-cards.png" alt="Cards" width="100%">
 
-### Navigation â€” Sidebar + Tabs + Breadcrumbs
+### Navigation — Sidebar + Tabs + Breadcrumbs
 
 <img src="./assets/16-navigation-components.png" alt="Navigation Components" width="100%">
 
 ---
 
-## ðŸŒ™ Dark Mode / Light Mode
+## 🌙 Dark Mode / Light Mode
 
-### Dark Mode (PadrÃ£o operacional)
+### Dark Mode (Padrão operacional)
 
 <img src="./assets/17-dark-mode-preview.png" alt="Dark Mode Preview" width="100%">
 
@@ -122,25 +122,25 @@ Alerts: `success Â· warning Â· error Â· info` | Badges: `ATIVO Â· INATIV
 
 ---
 
-## â™¿ WCAG 2.1 AA â€” Auditoria de Contraste
+## ♿ WCAG 2.1 AA — Auditoria de Contraste
 
-**26 pares de cor testados Â· 3 cores corrigidas apÃ³s auditoria Â· MÃ­nimo 4.5:1 em todos os pares**
+**26 pares de cor testados · 3 cores corrigidas após auditoria · Mínimo 4.5:1 em todos os pares**
 
 <img src="./assets/19-wcag-2-1-aa-contrast-audit.png" alt="WCAG 2.1 AA Contrast Audit" width="100%">
 
-### CorreÃ§Ãµes aplicadas apÃ³s auditoria
+### Correções aplicadas após auditoria
 
-| Par original | Contexto | Ratio antes | CorreÃ§Ã£o | Ratio depois |
+| Par original | Contexto | Ratio antes | Correção | Ratio depois |
 |---|---|---|---|---|
-| `#8193A8` / `#FFFFFF` | Texto muted â€” light mode | 3.15:1 âŒ | `#5E6E85` | 5.19:1 âœ… |
-| `#8193A8` / `#F5F7F9` | Texto muted â€” light surface | 2.93:1 âŒ | `#5E6E85` | 4.83:1 âœ… |
-| `#5585D4` / `#1C2533` | Code text em surface-2 | 4.18:1 âŒ | `#91AEE4` | 6.89:1 âœ… |
+| `#8193A8` / `#FFFFFF` | Texto muted — light mode | 3.15:1 ❌ | `#5E6E85` | 5.19:1 ✅ |
+| `#8193A8` / `#F5F7F9` | Texto muted — light surface | 2.93:1 ❌ | `#5E6E85` | 4.83:1 ✅ |
+| `#5585D4` / `#1C2533` | Code text em surface-2 | 4.18:1 ❌ | `#91AEE4` | 6.89:1 ✅ |
 
 ---
 
-## ðŸ”§ Figma Variables
+## 🔧 Figma Variables
 
-### ColeÃ§Ã£o: PCDF Design Tokens
+### Coleção: PCDF Design Tokens
 
 | Token | Dark | Light |
 |-------|------|-------|
@@ -152,7 +152,7 @@ Alerts: `success Â· warning Â· error Â· info` | Badges: `ATIVO Â· INATIV
 | `color/brand/gold` | `#F5A623` | `#C87200` |
 | `color/text/primary` | `#FFFFFF` | `#0E1520` |
 | `color/text/secondary` | `#A9B7C6` | `#445165` |
-| `color/text/muted` | `#8193A8` | `#5E6E85` âœ¦ |
+| `color/text/muted` | `#8193A8` | `#5E6E85` ✦ |
 | `color/border/default` | `#2E3A4E` | `#CDD6DF` |
 | `color/border/focus` | `#2E64C0` | `#1A4A9E` |
 | `color/status/success` | `#5CB87A` | `#18803F` |
@@ -160,23 +160,22 @@ Alerts: `success Â· warning Â· error Â· info` | Badges: `ATIVO Â· INATIV
 | `color/status/error` | `#EF5350` | `#C91C1C` |
 | `color/status/info` | `#5585D4` | `#1A4A9E` |
 
-> âœ¦ Valor corrigido para WCAG AA (era `#8193A8`, ratio 3.15:1 âŒ)
+> ✦ Valor corrigido para WCAG AA (era `#8193A8`, ratio 3.15:1 ❌)
 
-### ColeÃ§Ã£o: Spacing
+### Coleção: Spacing
 
-`spacing/4=4px Â· spacing/8=8px Â· spacing/12=12px Â· spacing/16=16px Â· spacing/24=24px Â· spacing/32=32px Â· spacing/48=48px Â· spacing/64=64px`
+`spacing/4=4px · spacing/8=8px · spacing/12=12px · spacing/16=16px · spacing/24=24px · spacing/32=32px · spacing/48=48px · spacing/64=64px`
 
-### ColeÃ§Ã£o: Border Radius
+### Coleção: Border Radius
 
-`radius/none=0px Â· radius/sm=4px Â· radius/md=8px Â· radius/lg=12px Â· radius/xl=16px Â· radius/full=9999px`
+`radius/none=0px · radius/sm=4px · radius/md=8px · radius/lg=12px · radius/xl=16px · radius/full=9999px`
 
 ---
-
 
 ### Para acessar o design system completo, acesse a seguir:  
 [Visualizar no Figma](https://www.figma.com/design/gAotIdNAKBThXKEZS1CyCb/EPS---PCDF?node-id=0-1&t=0wOZH1yc3o2loZtE-1)
 
-*Design system criado para o projeto Buscador OSINT Automatizado â€” EPS/UnB Â· Grupo 13 Â· PCDF.*  
-*Todas as cores validadas contra WCAG 2.1 AA. Todos os componentes construÃ­dos em Auto Layout no Figma.*
+*Design system criado para o projeto Buscador OSINT Automatizado — EPS/UnB · Grupo 13 · PCDF.*  
+*Todas as cores validadas contra WCAG 2.1 AA. Todos os componentes construídos em Auto Layout no Figma.*
 
 *Revisado por Alexandre Junior*
