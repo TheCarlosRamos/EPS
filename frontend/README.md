@@ -15,7 +15,14 @@ npm install
 npm run dev
 npm run type-check
 npm run lint
+npm run format:check
 ```
+
+## Padronizacao de codigo
+
+- ESLint com `eslint-plugin-security` ativo.
+- Regra `react/no-danger` ativada para bloquear `dangerouslySetInnerHTML`.
+- Prettier configurado com `semi`, `singleQuote` e `trailingComma`.
 
 ## Mocks e Integracao Futura
 

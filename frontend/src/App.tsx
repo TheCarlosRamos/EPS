@@ -1,5 +1,5 @@
-import './App.css'
-import { integrationItems } from './config/integration-map'
+import './App.css';
+import { integrationItems } from './config/integration-map';
 
 function App() {
   return (
@@ -20,7 +20,9 @@ function App() {
               <div>
                 <strong>{item.title}</strong>
                 <p>{item.currentState}</p>
-                <p className="future-note">Proxima troca: {item.updateWhenReady}</p>
+                <p className="future-note">
+                  Proxima troca: {item.updateWhenReady}
+                </p>
               </div>
               <span className="status-tag">{item.status}</span>
             </li>
@@ -28,7 +30,7 @@ function App() {
         </ul>
       </section>
     </main>
-  )
+  );
 }
 
-export default App
+export default App;
