@@ -1,0 +1,46 @@
+name: Validate Celery Beat Persistence
+
+on:
+  workflow_dispatch:
+
+jobs:
+  beat-persistence-postgres:
+    name: Beat schedule persists across restarts (Postgres)
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: osint
+          POSTGRES_PASSWORD: osint_dev
+          POSTGRES_DB: osint_dev
+        options: >-
+          --health-cmd "pg_isready -U osint"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install backend dependencies
+        run: |
+          cd backend
+          uv pip install --system ".[dev]"
+
+      - name: Run Beat persistence integration test (Postgres)
+        env:
+          CELERY_BEAT_DBURI: postgresql+psycopg://osint:osint_dev@localhost:5432/osint_dev
+        run: |
+          cd backend
+          python -m pytest -m integration -k beat_persistence_postgres -v --tb=short
