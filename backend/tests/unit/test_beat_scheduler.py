@@ -28,7 +28,7 @@ class TestProductionCeleryBeatConfig:
         from src.core.celery_app import app
 
         assert app.conf.beat_scheduler == "sqlalchemy_celery_beat.schedulers:DatabaseScheduler"
-        assert app.conf.beat_schedule is BEAT_SCHEDULE
+        assert app.conf.beat_schedule == BEAT_SCHEDULE
         assert app.conf.beat_dburi.startswith("postgresql+psycopg://")
 
 
