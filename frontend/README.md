@@ -33,6 +33,7 @@
 npm install
 npm run dev         # Vite dev server com proxy /api
 npm run build       # Build de produção
+npm run test:run    # Testes automatizados (Vitest)
 npm run type-check  # Validar tipos TS
 npm run lint        # ESLint + regras de segurança
 npm run format:check # Prettier
