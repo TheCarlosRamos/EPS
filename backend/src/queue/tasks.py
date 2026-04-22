@@ -6,9 +6,9 @@ They must exist and be registered, otherwise Celery Beat will raise `NotRegister
 
 from __future__ import annotations
 
-from celery import shared_task
 import redis as redis_lib
 import structlog
+from celery import shared_task
 
 from src.core.config import RedisSettings
 from src.queue.health import check_queue_depths, check_redis_health
