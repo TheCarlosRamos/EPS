@@ -9,7 +9,7 @@ requires-python = ">=3.12"
 dependencies = [
     "celery[redis]>=5.4.0",
     "redis>=5.0.0",
-    "sqlalchemy-celery-beat>=0.8.4",
+    "sqlalchemy-celery-beat>=0.8.4,<0.9",
     "sqlalchemy>=2.0.0",
     "psycopg[binary]>=3.2.0",
     "pydantic-settings>=2.0.0",
