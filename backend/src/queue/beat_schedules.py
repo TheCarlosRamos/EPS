@@ -2,14 +2,18 @@
 
 health_check_scrapers: every 5 minutes
 data_retention_purge: daily at 02:00
+
+Schedules use Celery ``schedule`` / ``crontab`` objects so they can be stored by
+``sqlalchemy-celery-beat`` (DatabaseScheduler) in PostgreSQL.
 """
 
 from celery.schedules import crontab
+from celery.schedules import schedule as interval_schedule
 
 BEAT_SCHEDULE = {
     "health-check-scrapers": {
         "task": "src.queue.tasks.health_check_scrapers",
-        "schedule": 300.0,  # every 5 minutes
+        "schedule": interval_schedule(run_every=300.0),
         "options": {"queue": "default"},
     },
     "data-retention-purge": {
