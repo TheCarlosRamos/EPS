@@ -10,6 +10,25 @@ from src.core.config import VaultSettings
 from src.core.vault import VaultClient
 
 
+# Test fixtures
+@pytest.fixture
+def vault_test_token():
+    """Test token for Vault client tests."""
+    return "test-token"
+
+
+@pytest.fixture
+def vault_bad_token():
+    """Bad token for auth failure tests."""
+    return "bad-token"
+
+
+@pytest.fixture
+def vault_short_token():
+    """Short token variant for certain test cases."""
+    return "t"
+
+
 @pytest.mark.unit
 class TestVaultSettings:
     def test_defaults(self, monkeypatch):
@@ -28,17 +47,17 @@ class TestVaultSettings:
         settings = VaultSettings()
         assert settings.enabled is False
 
-    def test_from_env(self, monkeypatch):
+    def test_from_env(self, monkeypatch, vault_test_token):
         monkeypatch.setenv("VAULT_ENABLED", "true")
         monkeypatch.setenv("VAULT_ADDR", "http://vault.internal:8200")
-        monkeypatch.setenv("VAULT_TOKEN", "s.test-token")
+        monkeypatch.setenv("VAULT_TOKEN", f"s.{vault_test_token}")
         monkeypatch.setenv("VAULT_MOUNT_POINT", "kv")
         monkeypatch.setenv("VAULT_PROXY_PATH", "infra/proxy")
         monkeypatch.setenv("VAULT_TIMEOUT", "10")
         settings = VaultSettings()
         assert settings.enabled is True
         assert settings.addr == "http://vault.internal:8200"
-        assert settings.token == "s.test-token"
+        assert settings.token == f"s.{vault_test_token}"
         assert settings.mount_point == "kv"
         assert settings.proxy_path == "infra/proxy"
         assert settings.timeout == 10
@@ -82,11 +101,11 @@ class TestVaultClientEnabled:
         mock_hvac_module.Client.return_value = mock_client_instance
         return mock_hvac_module, mock_client_instance
 
-    def test_reads_secret_from_vault(self):
+    def test_reads_secret_from_vault(self, vault_test_token):
         mock_hvac, mock_instance = self._make_mock_hvac(
             secret_data={"proxy_url": "http://proxy:8080", "proxy_username": "u", "proxy_password": "p"}
         )
-        settings = VaultSettings(enabled=True, addr="http://vault:8200", token="test-token")
+        settings = VaultSettings(enabled=True, addr="http://vault:8200", token=vault_test_token)
         client = VaultClient(settings)
         with patch.dict("sys.modules", {"hvac": mock_hvac}):
             creds = client.get_proxy_credentials()
@@ -94,37 +113,37 @@ class TestVaultClientEnabled:
         assert creds["proxy_username"] == "u"
         assert creds["proxy_password"] == "p"
 
-    def test_auth_failure_falls_back_to_env(self, monkeypatch):
+    def test_auth_failure_falls_back_to_env(self, monkeypatch, vault_bad_token):
         monkeypatch.setenv("PROXY_URL", "http://fallback:8080")
         mock_hvac, _ = self._make_mock_hvac(authenticated=False)
-        settings = VaultSettings(enabled=True, addr="http://vault:8200", token="bad-token")
+        settings = VaultSettings(enabled=True, addr="http://vault:8200", token=vault_bad_token)
         client = VaultClient(settings)
         with patch.dict("sys.modules", {"hvac": mock_hvac}):
             creds = client.get_proxy_credentials()
         assert creds["proxy_url"] == "http://fallback:8080"
 
-    def test_connection_error_falls_back_to_env(self, monkeypatch):
+    def test_connection_error_falls_back_to_env(self, monkeypatch, vault_short_token):
         monkeypatch.setenv("PROXY_URL", "http://fallback:8080")
         mock_hvac = MagicMock()
         mock_hvac.Client.side_effect = ConnectionError("unreachable")
-        settings = VaultSettings(enabled=True, addr="http://unreachable:9999", token="t", timeout=1)
+        settings = VaultSettings(enabled=True, addr="http://unreachable:9999", token=vault_short_token, timeout=1)
         client = VaultClient(settings)
         with patch.dict("sys.modules", {"hvac": mock_hvac}):
             creds = client.get_proxy_credentials()
         assert creds["proxy_url"] == "http://fallback:8080"
 
-    def test_read_exception_returns_empty(self):
+    def test_read_exception_returns_empty(self, vault_test_token):
         mock_hvac, mock_instance = self._make_mock_hvac(authenticated=True)
         mock_instance.secrets.kv.v2.read_secret_version.side_effect = Exception("read error")
-        settings = VaultSettings(enabled=True, addr="http://vault:8200", token="test-token")
+        settings = VaultSettings(enabled=True, addr="http://vault:8200", token=vault_test_token)
         client = VaultClient(settings)
         with patch.dict("sys.modules", {"hvac": mock_hvac}):
             result = client.read_secret("some/path")
         assert result == {}
 
-    def test_ensure_client_caches_result(self):
+    def test_ensure_client_caches_result(self, vault_short_token):
         mock_hvac, _ = self._make_mock_hvac(authenticated=True)
-        settings = VaultSettings(enabled=True, addr="http://vault:8200", token="t")
+        settings = VaultSettings(enabled=True, addr="http://vault:8200", token=vault_short_token)
         client = VaultClient(settings)
         with patch.dict("sys.modules", {"hvac": mock_hvac}):
             assert client._ensure_client() is True
