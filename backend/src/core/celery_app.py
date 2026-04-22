@@ -16,7 +16,7 @@ app = Celery("buscador_osint")
 
 beat_conf = {
     "beat_schedule": BEAT_SCHEDULE,
-    "beat_dburi": get_beat_database_url(),
+    "beat_dburi": get_beat_database_url(settings),
     "beat_scheduler": "sqlalchemy_celery_beat.schedulers:DatabaseScheduler",
 }
 if settings.beat_schema is not None:

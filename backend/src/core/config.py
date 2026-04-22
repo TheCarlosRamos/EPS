@@ -73,15 +73,15 @@ class CelerySettings(BaseSettings):
     beat_schema: str | None = None
 
 
-def get_beat_database_url() -> str:
+def get_beat_database_url(settings: CelerySettings | None = None) -> str:
     """URL for sqlalchemy-celery-beat (Celery Beat schedule persistence in PostgreSQL).
 
     Uses ``CELERY_BEAT_DBURI`` when set; otherwise builds from ``POSTGRES_*``.
     """
 
-    settings = CelerySettings()
-    if settings.beat_dburi:
-        return settings.beat_dburi
+    celery_settings = settings or CelerySettings()
+    if celery_settings.beat_dburi:
+        return celery_settings.beat_dburi
     pg = PostgresSettings()
     u = quote_plus(pg.user)
     if pg.password:
