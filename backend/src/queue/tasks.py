@@ -6,9 +6,9 @@ They must exist and be registered, otherwise Celery Beat will raise `NotRegister
 
 from __future__ import annotations
 
+from celery import shared_task
 import redis as redis_lib
 import structlog
-from celery import shared_task
 
 from src.core.config import RedisSettings
 from src.queue.health import check_queue_depths, check_redis_health
@@ -39,7 +39,11 @@ def health_check_scrapers() -> dict[str, object]:
     except Exception as exc:  # noqa: BLE001
         logger.warning("queue_metrics_update_failed", error=str(exc))
 
-    logger.info("periodic_health_check_completed", redis=redis_health, queue_depths=depths)
+    logger.info(
+        "periodic_health_check_completed",
+        redis=redis_health,
+        queue_depths=depths,
+    )
     return {"redis": redis_health, "queue_depths": depths}
 
 
