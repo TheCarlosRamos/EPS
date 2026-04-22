@@ -2,7 +2,7 @@
 
 import pytest
 
-from src.core.config import CelerySettings, RedisSettings
+from src.core.config import CelerySettings, PostgresSettings, RedisSettings, get_beat_database_url
 
 
 @pytest.mark.unit
@@ -63,3 +63,27 @@ class TestCelerySettings:
         settings = CelerySettings()
         assert settings.broker_url == "redis://custom:6379/1"
         assert settings.result_backend == "redis://custom:6379/2"
+
+
+@pytest.mark.unit
+class TestBeatDatabaseUrl:
+    def test_explicit_beat_dburi(self, monkeypatch):
+        monkeypatch.setenv("CELERY_BEAT_DBURI", "postgresql+psycopg://u:p@db:5432/beatdb")
+        assert get_beat_database_url() == "postgresql+psycopg://u:p@db:5432/beatdb"
+
+    def test_derived_from_postgres_env(self, monkeypatch):
+        monkeypatch.delenv("CELERY_BEAT_DBURI", raising=False)
+        monkeypatch.setenv("POSTGRES_USER", "osint")
+        monkeypatch.setenv("POSTGRES_PASSWORD", "secret@x")
+        monkeypatch.setenv("POSTGRES_HOST", "postgres.internal")
+        monkeypatch.setenv("POSTGRES_PORT", "5433")
+        monkeypatch.setenv("POSTGRES_DB", "osint_dev")
+        url = get_beat_database_url()
+        assert url.startswith("postgresql+psycopg://")
+        assert "postgres.internal:5433" in url
+        assert "secret%40x" in url
+
+    def test_postgres_defaults(self):
+        pg = PostgresSettings()
+        assert pg.host == "localhost"
+        assert pg.port == 5432
