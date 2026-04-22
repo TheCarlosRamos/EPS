@@ -2,7 +2,7 @@
 
 > **Disciplina:** Engenharia de Produto de Software (EPS) · UnB  
 > **Projeto:** Buscador OSINT Automatizado — Polícia Civil do Distrito Federal  
-> **Versão:** 1.0.0  
+> **Versão:** 1.0.0
 
 ---
 
@@ -64,13 +64,13 @@ Tokens: `none (0) · sm (4px) · md (8px) · lg (12px) · xl (16px) · full (999
 
 Escala: `H1 (48px) · H2 (36px) · H3 (28px) · H4 (22px) · H5 (18px) · H6 (14px)`
 
-*(Veja frame `HEADINGS — IBM Plex Mono` no Figma — Página: 📝 Typography)*
+_(Veja frame `HEADINGS — IBM Plex Mono` no Figma — Página: 📝 Typography)_
 
 ### Body & Utility Types — Inter + IBM Plex Mono
 
 Estilos: `Body LG · Body MD · Body SM · Caption · Overline · Code`
 
-*(Veja frame `BODY & UTILITY TYPES` no Figma — Página: 📝 Typography)*
+_(Veja frame `BODY & UTILITY TYPES` no Figma — Página: 📝 Typography)_
 
 ---
 
@@ -130,11 +130,11 @@ Alerts: `success · warning · error · info` | Badges: `ATIVO · INATIVO · PRI
 
 ### Correções aplicadas após auditoria
 
-| Par original | Contexto | Ratio antes | Correção | Ratio depois |
-|---|---|---|---|---|
-| `#8193A8` / `#FFFFFF` | Texto muted — light mode | 3.15:1 ❌ | `#5E6E85` | 5.19:1 ✅ |
-| `#8193A8` / `#F5F7F9` | Texto muted — light surface | 2.93:1 ❌ | `#5E6E85` | 4.83:1 ✅ |
-| `#5585D4` / `#1C2533` | Code text em surface-2 | 4.18:1 ❌ | `#91AEE4` | 6.89:1 ✅ |
+| Par original          | Contexto                    | Ratio antes | Correção  | Ratio depois |
+| --------------------- | --------------------------- | ----------- | --------- | ------------ |
+| `#8193A8` / `#FFFFFF` | Texto muted — light mode    | 3.15:1 ❌   | `#5E6E85` | 5.19:1 ✅    |
+| `#8193A8` / `#F5F7F9` | Texto muted — light surface | 2.93:1 ❌   | `#5E6E85` | 4.83:1 ✅    |
+| `#5585D4` / `#1C2533` | Code text em surface-2      | 4.18:1 ❌   | `#91AEE4` | 6.89:1 ✅    |
 
 ---
 
@@ -142,23 +142,23 @@ Alerts: `success · warning · error · info` | Badges: `ATIVO · INATIVO · PRI
 
 ### Coleção: PCDF Design Tokens
 
-| Token | Dark | Light |
-|-------|------|-------|
-| `color/bg/primary` | `#060A12` | `#F5F7F9` |
-| `color/bg/surface-1` | `#0E1520` | `#FFFFFF` |
-| `color/bg/surface-2` | `#1C2533` | `#E8ECF0` |
-| `color/bg/surface-3` | `#2E3A4E` | `#CDD6DF` |
-| `color/brand/primary` | `#2E64C0` | `#1A4A9E` |
-| `color/brand/gold` | `#F5A623` | `#C87200` |
-| `color/text/primary` | `#FFFFFF` | `#0E1520` |
-| `color/text/secondary` | `#A9B7C6` | `#445165` |
-| `color/text/muted` | `#8193A8` | `#5E6E85` ✦ |
-| `color/border/default` | `#2E3A4E` | `#CDD6DF` |
-| `color/border/focus` | `#2E64C0` | `#1A4A9E` |
-| `color/status/success` | `#5CB87A` | `#18803F` |
-| `color/status/warning` | `#F5A623` | `#C95E00` |
-| `color/status/error` | `#EF5350` | `#C91C1C` |
-| `color/status/info` | `#5585D4` | `#1A4A9E` |
+| Token                  | Dark      | Light       |
+| ---------------------- | --------- | ----------- |
+| `color/bg/primary`     | `#060A12` | `#F5F7F9`   |
+| `color/bg/surface-1`   | `#0E1520` | `#FFFFFF`   |
+| `color/bg/surface-2`   | `#1C2533` | `#E8ECF0`   |
+| `color/bg/surface-3`   | `#2E3A4E` | `#CDD6DF`   |
+| `color/brand/primary`  | `#2E64C0` | `#1A4A9E`   |
+| `color/brand/gold`     | `#F5A623` | `#C87200`   |
+| `color/text/primary`   | `#FFFFFF` | `#0E1520`   |
+| `color/text/secondary` | `#A9B7C6` | `#445165`   |
+| `color/text/muted`     | `#8193A8` | `#5E6E85` ✦ |
+| `color/border/default` | `#2E3A4E` | `#CDD6DF`   |
+| `color/border/focus`   | `#2E64C0` | `#1A4A9E`   |
+| `color/status/success` | `#5CB87A` | `#18803F`   |
+| `color/status/warning` | `#F5A623` | `#C95E00`   |
+| `color/status/error`   | `#EF5350` | `#C91C1C`   |
+| `color/status/info`    | `#5585D4` | `#1A4A9E`   |
 
 > ✦ Valor corrigido para WCAG AA (era `#8193A8`, ratio 3.15:1 ❌)
 
@@ -172,10 +172,11 @@ Alerts: `success · warning · error · info` | Badges: `ATIVO · INATIVO · PRI
 
 ---
 
-### Para acessar o design system completo, acesse a seguir:  
+### Para acessar o design system completo, acesse a seguir:
+
 [Visualizar no Figma](https://www.figma.com/design/gAotIdNAKBThXKEZS1CyCb/EPS---PCDF?node-id=0-1&t=0wOZH1yc3o2loZtE-1)
 
-*Design system criado para o projeto Buscador OSINT Automatizado — EPS/UnB · Grupo 13 · PCDF.*  
-*Todas as cores validadas contra WCAG 2.1 AA. Todos os componentes construídos em Auto Layout no Figma.*
+_Design system criado para o projeto Buscador OSINT Automatizado — EPS/UnB · Grupo 13 · PCDF._  
+_Todas as cores validadas contra WCAG 2.1 AA. Todos os componentes construídos em Auto Layout no Figma._
 
-*Revisado por Alexandre Junior*
+_Revisado por Alexandre Junior_
