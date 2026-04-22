@@ -1,6 +1,9 @@
 # Frontend - Buscador OSINT
 
-Infraestrutura completa para issue #12: cliente HTTP tipado, proxy Vite, Nginx reverse proxy e Docker.
+## Documentacao
+
+- Visao geral de arquitetura: `docs/architecture-overview.md`
+- Fluxo de integracao (mock vs real): `docs/integration-flow-mock-vs-real.md`
 
 ## Escopo Implementado
 
