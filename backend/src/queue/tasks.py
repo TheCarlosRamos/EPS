@@ -6,8 +6,8 @@ They must exist and be registered, otherwise Celery Beat will raise `NotRegister
 
 from __future__ import annotations
 
-import structlog
 import redis as redis_lib
+import structlog
 from celery import shared_task
 
 from src.core.config import RedisSettings
