@@ -56,4 +56,3 @@ def data_retention_purge() -> dict[str, str]:
     """
     logger.warning("data_retention_purge_not_implemented")
     return {"status": "skipped", "reason": "not_implemented"}
-
