@@ -2,7 +2,6 @@
 
 import pytest
 from celery.schedules import crontab
-
 from src.queue.beat_schedules import BEAT_SCHEDULE
 
 

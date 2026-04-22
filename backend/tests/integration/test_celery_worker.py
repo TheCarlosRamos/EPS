@@ -4,7 +4,6 @@ import os
 
 import pytest
 from celery import Celery
-
 from src.queue.base_task import BaseScraperTask
 
 REDIS_URL = os.getenv("REDIS_URL", "redis://localhost:6379/0")

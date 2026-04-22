@@ -1,7 +1,6 @@
 """Integration tests for health checks against real Redis."""
 
 import pytest
-
 from src.queue.health import check_queue_depths, check_redis_health
 
 

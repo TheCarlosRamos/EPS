@@ -3,7 +3,6 @@
 import pytest
 from celery import Celery
 from celery.exceptions import Retry
-
 from src.queue.base_task import BaseScraperTask
 from src.queue.retry import MAX_RETRIES
 
