@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 services:
   frontend:
     build:
@@ -59,3 +60,60 @@ services:
 volumes:
   redis-data:
   postgres-data:
+=======
+
+services:
+  tor:
+    image: osminogin/tor-simple:latest
+    ports:
+      - "9050:9050"
+
+  api:
+    build: backend
+    ports:
+      - "8000:8000"
+    environment:
+      - REDIS_HOST=redis
+    depends_on:
+      - redis
+      - minio
+      - neo4j
+  worker:
+    build: backend
+    command: celery -A workers.tasks worker --loglevel=info
+    environment:
+      - REDIS_HOST=redis
+    depends_on:
+      - redis
+      - minio
+      - neo4j
+      - tor
+  redis:
+    image: redis:7
+  minio:
+    image: minio/minio:latest
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    command: server /data --console-address ":9001"
+    environment:
+      - MINIO_ROOT_USER=minioadmin
+      - MINIO_ROOT_PASSWORD=minioadmin
+  neo4j:
+    image: neo4j:latest
+    ports:
+      - "7474:7474"
+      - "7687:7687"
+    environment:
+      - NEO4J_AUTH=neo4j/osint123
+      - NEO4J_PLUGINS=["apoc"]
+    volumes:
+      - neo4j_data:/data
+  frontend:
+    build: frontend
+    ports:
+      - "3000:3000"
+
+volumes:
+  neo4j_data:
+>>>>>>> 9ae8a72cc681d65889500874d7843ccc25c0a5fe

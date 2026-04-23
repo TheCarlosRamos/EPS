@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 {
   "name": "frontend",
   "private": true,
@@ -38,3 +39,6 @@
     "vitest": "^3.2.4"
   }
 }
+=======
+{"name":"pcdf-ui","private":true,"dependencies":{"react":"^18.0.0","react-dom":"^18.0.0","react-force-graph-2d":"^1.25.0","axios":"^1.6.0"},"scripts":{"start":"react-scripts start","build":"react-scripts build","test":"react-scripts test","eject":"react-scripts eject"},"devDependencies":{"react-scripts":"^5.0.1"}}
+>>>>>>> 9ae8a72cc681d65889500874d7843ccc25c0a5fe
