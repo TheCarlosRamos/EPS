@@ -2,7 +2,6 @@
 
 import pytest
 from fakeredis import FakeRedis
-
 from src.queue.health import KNOWN_QUEUES, check_queue_depths, check_redis_health
 
 

@@ -1,7 +1,6 @@
 """Tests for exponential backoff retry policy."""
 
 import pytest
-
 from src.queue.retry import MAX_RETRIES, RETRY_DELAYS, get_retry_delay
 
 

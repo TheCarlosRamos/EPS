@@ -9,9 +9,19 @@ from __future__ import annotations
 import os
 
 import pytest
-
 from src.core.config import VaultSettings
 from src.core.vault import VaultClient
+
+
+# Test fixtures
+@pytest.fixture
+def test_proxy_credentials():
+    """Test proxy credentials for integration tests."""
+    return {
+        "url": "http://test-proxy:8080",
+        "username": "test_user",
+        "password": "test_pass",
+    }
 
 
 def _vault_settings() -> VaultSettings:
@@ -58,20 +68,20 @@ class TestVaultIntegration:
         result = vault_client.read_secret("test/integration")
         assert result["key"] == "value123"
 
-    def test_get_proxy_credentials_from_vault(self, vault_client, hvac_client):
+    def test_get_proxy_credentials_from_vault(self, vault_client, hvac_client, test_proxy_credentials):
         hvac_client.secrets.kv.v2.create_or_update_secret(
             path="osint/proxy",
             secret={
-                "proxy_url": "http://test-proxy:8080",
-                "proxy_username": "test_user",
-                "proxy_password": "test_pass",
+                "proxy_url": test_proxy_credentials["url"],
+                "proxy_username": test_proxy_credentials["username"],
+                "proxy_password": test_proxy_credentials["password"],
             },
             mount_point="secret",
         )
         creds = vault_client.get_proxy_credentials()
-        assert creds["proxy_url"] == "http://test-proxy:8080"
-        assert creds["proxy_username"] == "test_user"
-        assert creds["proxy_password"] == "test_pass"
+        assert creds["proxy_url"] == test_proxy_credentials["url"]
+        assert creds["proxy_username"] == test_proxy_credentials["username"]
+        assert creds["proxy_password"] == test_proxy_credentials["password"]
 
     def test_nonexistent_path_returns_empty(self, vault_client):
         result = vault_client.read_secret("nonexistent/path/that/does/not/exist")

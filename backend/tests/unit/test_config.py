@@ -5,15 +5,34 @@ import pytest
 from src.core.config import CelerySettings, PostgresSettings, RedisSettings, get_beat_database_url
 
 
+# Test fixtures
+@pytest.fixture
+def redis_test_password():
+    """Test password for Redis settings."""
+    return "s3cret"
+
+
+@pytest.fixture
+def redis_short_password():
+    """Short test password."""
+    return "pw"
+
+
+@pytest.fixture
+def redis_env_password():
+    """Environment-based password."""
+    return "env-pw"
+
+
 @pytest.mark.unit
 class TestRedisSettings:
     def test_default_url_no_password(self):
         settings = RedisSettings(host="localhost", port=6379, db=0, password="")
         assert settings.url == "redis://localhost:6379/0"
 
-    def test_url_with_password(self):
-        settings = RedisSettings(host="redis.internal", port=6380, db=2, password="s3cret")
-        assert settings.url == "redis://:s3cret@redis.internal:6380/2"
+    def test_url_with_password(self, redis_test_password):
+        settings = RedisSettings(host="redis.internal", port=6380, db=2, password=redis_test_password)
+        assert settings.url == f"redis://:{redis_test_password}@redis.internal:6380/2"
 
     def test_default_values(self):
         settings = RedisSettings()
@@ -23,20 +42,20 @@ class TestRedisSettings:
         assert settings.password == ""
         assert settings.max_memory == "512mb"
 
-    def test_custom_values(self):
-        settings = RedisSettings(host="10.0.0.1", port=6380, db=3, password="pw", max_memory="1gb")
+    def test_custom_values(self, redis_short_password):
+        settings = RedisSettings(host="10.0.0.1", port=6380, db=3, password=redis_short_password, max_memory="1gb")
         assert settings.host == "10.0.0.1"
         assert settings.port == 6380
         assert settings.db == 3
         assert settings.max_memory == "1gb"
 
-    def test_from_env(self, monkeypatch):
+    def test_from_env(self, monkeypatch, redis_env_password):
         monkeypatch.setenv("REDIS_HOST", "env-host")
         monkeypatch.setenv("REDIS_PORT", "7777")
         monkeypatch.setenv("REDIS_DB", "5")
-        monkeypatch.setenv("REDIS_PASSWORD", "env-pw")
+        monkeypatch.setenv("REDIS_PASSWORD", redis_env_password)
         settings = RedisSettings()
-        assert settings.url == "redis://:env-pw@env-host:7777/5"
+        assert settings.url == f"redis://:{redis_env_password}@env-host:7777/5"
 
 
 @pytest.mark.unit

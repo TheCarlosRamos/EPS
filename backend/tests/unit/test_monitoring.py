@@ -1,7 +1,6 @@
 """Tests for Prometheus monitoring metrics."""
 
 import pytest
-
 from src.queue.monitoring import (
     QUEUE_DEPTH,
     TASK_DURATION,

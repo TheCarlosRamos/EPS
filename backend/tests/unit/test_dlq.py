@@ -2,7 +2,6 @@
 
 import pytest
 from fakeredis import FakeRedis
-
 from src.queue.dlq import DLQ_KEY, DLQManager
 
 

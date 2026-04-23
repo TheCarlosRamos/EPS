@@ -1,7 +1,6 @@
 """Integration tests for DLQ against real Redis."""
 
 import pytest
-
 from src.queue.dlq import DLQManager
 
 
